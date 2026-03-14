@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Luyện Tập Từ Vựng TOEIC</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f4f8;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .quiz-container {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+            padding: 30px;
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+        .score-board {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 20px;
+        }
+        .question {
+            font-size: 28px;
+            font-weight: bold;
+            color: #2980b9;
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #ecf0f1;
+            border-radius: 8px;
+        }
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+        button {
+            background-color: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            padding: 15px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        button:hover {
+            background-color: #d5dbdb;
+        }
+        button.correct {
+            background-color: #2ecc71;
+            color: white;
+            border-color: #27ae60;
+        }
+        button.wrong {
+            background-color: #e74c3c;
+            color: white;
+            border-color: #c0392b;
+        }
+        button:disabled {
+            cursor: not-allowed;
+        }
+        .next-btn {
+            margin-top: 20px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            width: 100%;
+            display: none;
+            font-weight: bold;
+        }
+        .next-btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <h2>Luyện Từ Vựng</h2>
+    <div class="score-board">Điểm: <span id="score">0</span> / <span id="total">0</span></div>
+    
+    <div class="question" id="word-display">Đang tải...</div>
+    
+    <div class="options" id="options-container">
+        </div>
+    
+    <button class="next-btn" id="next-btn" onclick="loadNextQuestion()">Câu tiếp theo ➔</button>
+</div>
+
+<script>
+    // Danh sách từ vựng của bạn
+    const vocabList = [
+        { en: "tenants", vi: "người thuê" },
+        { en: "out of order", vi: "ngừng hoạt động" },
+        { en: "apologize", vi: "xin lỗi" },
+        { en: "property management team", vi: "đội quản lý tài sản" },
+        { en: "attempt to", vi: "cố gắng" },
+        { en: "be directed to", vi: "được hướng dẫn/chuyển đến" },
+        { en: "tailored / be customed to", vi: "thiết kế riêng" },
+        { en: "attention", vi: "dành sự chú ý" },
+        { en: "measurement", vi: "số đo" },
+        { en: "up front / before", vi: "trước (thanh toán/thời gian)" },
+        { en: "assured", vi: "đảm bảo" },
+        { en: "former", vi: "cũ, trước đây" },
+        { en: "temporary (>< permanent)", vi: "tạm thời" },
+        { en: "superb", vi: "tuyệt vời" },
+        { en: "enclose / attached", vi: "đính kèm" },
+        { en: "in advance", vi: "trước" },
+        { en: "professional / specialists", vi: "chuyên gia" },
+        { en: "practice", vi: "cơ sở (hành nghề)" },
+        { en: "procedures", vi: "quy trình thủ tục" },
+        { en: "share a passion for", vi: "có chung niềm đam mê" },
+        { en: "initial / first", vi: "đầu tiên" }
+    ];
+
+    let currentQuestion = {};
+    let score = 0;
+    let totalAnswered = 0;
+
+    // Hàm random mảng
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function loadNextQuestion() {
+        // Ẩn nút Next
+        document.getElementById("next-btn").style.display = "none";
+        
+        // Chọn 1 từ ngẫu nhiên làm câu hỏi
+        let randomIndex = Math.floor(Math.random() * vocabList.length);
+        currentQuestion = vocabList[randomIndex];
+        
+        // Hiển thị từ tiếng Anh
+        document.getElementById("word-display").innerText = currentQuestion.en;
+        
+        // Tạo mảng đáp án: 1 đúng + 3 sai
+        let options = [currentQuestion.vi];
+        while (options.length < 4) {
+            let randomWrong = vocabList[Math.floor(Math.random() * vocabList.length)].vi;
+            if (!options.includes(randomWrong)) {
+                options.push(randomWrong);
+            }
+        }
+        
+        // Xáo trộn đáp án
+        options = shuffleArray(options);
+        
+        // Hiển thị các nút đáp án
+        const optionsContainer = document.getElementById("options-container");
+        optionsContainer.innerHTML = ""; // Xóa nút cũ
+        
+        options.forEach(option => {
+            let btn = document.createElement("button");
+            btn.innerText = option;
+            btn.onclick = () => checkAnswer(btn, option);
+            optionsContainer.appendChild(btn);
+        });
+    }
+
+    function checkAnswer(btn, selectedAnswer) {
+        // Vô hiệu hóa tất cả các nút
+        const allButtons = document.querySelectorAll("#options-container button");
+        allButtons.forEach(b => b.disabled = true);
+        
+        totalAnswered++;
+        
+        // Kiểm tra đúng sai
+        if (selectedAnswer === currentQuestion.vi) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("wrong");
+            // Highlight đáp án đúng
+            allButtons.forEach(b => {
+                if (b.innerText === currentQuestion.vi) {
+                    b.classList.add("correct");
+                }
+            });
+        }
+        
+        // Cập nhật điểm
+        document.getElementById("score").innerText = score;
+        document.getElementById("total").innerText = totalAnswered;
+        
+        // Hiện nút Next
+        document.getElementById("next-btn").style.display = "block";
+    }
+
+    // Chạy câu hỏi đầu tiên khi tải trang
+    window.onload = loadNextQuestion;
+</script>
+
+</body>
+</html>
