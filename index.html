@@ -3,322 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Luyện Tập Từ Vựng TOEIC - Tự Gõ Nghĩa</title>
-    <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        .quiz-container {
-            background-color: white;
-            border-radius: 12px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-            padding: 30px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-        }
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 5px;
-        }
-        .score-board {
-            font-size: 16px;
-            color: #7f8c8d;
-            margin-bottom: 20px;
-        }
-        .question {
-            font-size: 28px;
-            font-weight: bold;
-            color: #2980b9;
-            margin: 20px 0;
-            padding: 20px;
-            background-color: #ecf0f1;
-            border-radius: 8px;
-        }
-        .input-area {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        input[type="text"] {
-            padding: 15px;
-            font-size: 16px;
-            border: 2px solid #bdc3c7;
-            border-radius: 8px;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-        input[type="text"]:focus {
-            border-color: #3498db;
-        }
-        .btn {
-            padding: 15px;
-            font-size: 16px;
-            border-radius: 8px;
-            cursor: pointer;
-            border: none;
-            font-weight: bold;
-            transition: all 0.2s ease;
-        }
-        .check-btn {
-            background-color: #2ecc71;
-            color: white;
-        }
-        .check-btn:hover {
-            background-color: #27ae60;
-        }
-        .next-btn {
-            background-color: #3498db;
-            color: white;
-            display: none;
-        }
-        .next-btn:hover {
-            background-color: #2980b9;
-        }
-        .feedback {
-            font-size: 18px;
-            font-weight: bold;
-            margin: 15px 0;
-            min-height: 25px;
-        }
-        .correct-text { color: #27ae60; }
-        .wrong-text { color: #c0392b; }
-        .hint {
-            font-size: 14px;
-            color: #7f8c8d;
-            margin-top: -5px;
-            margin-bottom: 15px;
-        }
-        .mistake-list {
-            text-align: left;
-            background-color: #fadbd8;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-        .mistake-list ul { padding-left: 20px; margin: 5px 0; }
-        .mistake-list li { margin-bottom: 5px; }
-    </style>
+    <title>Trắc Nghiệm TOEIC - Unit 27 & 28</title>
+    <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body>
+<body class="bg-indigo-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
-<div class="quiz-container">
-    <h2>Luyện Từ Vựng</h2>
-    <div class="score-board">
-        Câu: <span id="current-q-num">0</span> / <span id="total-q-num">0</span> | 
-        Điểm: <span id="score">0</span>
-    </div>
-    
-    <div id="quiz-area">
-        <div class="question" id="word-display">Đang tải...</div>
-        <div class="hint">Gõ tiếng Việt (có dấu hoặc không dấu đều được)</div>
-        
-        <div class="input-area">
-            <input type="text" id="answer-input" placeholder="Nhập nghĩa tiếng Việt vào đây..." autocomplete="off">
-            <button class="btn check-btn" id="check-btn" onclick="checkAnswer()">Kiểm tra</button>
-            <button class="btn next-btn" id="next-btn" onclick="loadNextQuestion()">Câu tiếp theo ➔</button>
-        </div>
+    <div class="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 transition-all">
+        <h1 class="text-2xl font-extrabold text-indigo-700 mb-2 text-center">Ôn Tập Trắc Nghiệm</h1>
+        <p class="text-center text-slate-500 mb-8 font-medium">Unit 27 (Board Meetings) & Unit 28 (Quality Control)</p>
 
-        <div class="feedback" id="feedback"></div>
-    </div>
-
-    <div id="summary-area" style="display: none;">
-        <h3 style="color: #2ecc71;">🎉 Bạn đã hoàn thành!</h3>
-        <p>Số câu đúng: <strong style="font-size: 20px;" id="final-score">0</strong></p>
-        
-        <div id="mistakes-container" style="display: none;">
-            <div class="mistake-list">
-                <strong>Các từ cần ôn tập lại:</strong>
-                <ul id="wrong-words-list"></ul>
+        <div id="quiz-screen">
+            <div class="flex justify-between items-center mb-6 text-sm font-bold text-indigo-400">
+                <span>Câu <span id="current-q-num">1</span> / <span id="total-q-num">24</span></span>
+                <span>Điểm: <span id="score" class="text-green-500">0</span></span>
             </div>
+
+            <div class="bg-indigo-600 text-white rounded-2xl p-8 mb-8 text-center shadow-inner">
+                <span class="text-sm font-semibold text-indigo-200 uppercase tracking-wider mb-2 block">Chọn nghĩa đúng của từ</span>
+                <h2 id="question-word" class="text-4xl font-black drop-shadow-md tracking-wide">Word</h2>
+            </div>
+
+            <div id="options-container" class="grid grid-cols-1 gap-4 mb-6">
+                </div>
+
+            <div id="feedback" class="text-center font-bold text-lg mb-6 hidden rounded-lg p-3 transition-all">
+                </div>
+
+            <button id="next-btn" onclick="nextQuestion()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-700 hidden transition-all shadow-md active:scale-95">Câu tiếp theo</button>
         </div>
 
-        <button class="btn check-btn" style="width: 100%; margin-top: 20px;" onclick="initQuiz()">Làm lại từ đầu</button>
+        <div id="result-screen" class="hidden text-center py-8">
+            <h2 class="text-3xl font-black text-indigo-700 mb-4">Hoàn thành bài test!</h2>
+            <p class="text-lg text-slate-600 mb-6">Bạn đã làm đúng <span id="final-score" class="font-bold text-green-600 text-2xl">0</span> trên tổng số 24 câu.</p>
+            <div class="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center mb-8 shadow-inner border-4 border-indigo-200">
+                <span id="percentage" class="text-2xl font-black text-indigo-600">100%</span>
+            </div>
+            <button onclick="startQuiz()" class="bg-indigo-600 text-white font-bold py-4 px-8 rounded-xl hover:bg-indigo-500 transition-all shadow-md w-full active:scale-95">Làm lại từ đầu</button>
+        </div>
     </div>
-</div>
 
-<script>
-    const vocabList = [
-        { en: "tenants", vi: "người thuê" },
-        { en: "out of order", vi: "ngừng hoạt động" },
-        { en: "apologize", vi: "xin lỗi" },
-        { en: "property management team", vi: "đội quản lý tài sản" },
-        { en: "attempt to", vi: "cố gắng" },
-        { en: "be directed to", vi: "được hướng dẫn / chuyển đến" },
-        { en: "tailored / be customed to", vi: "thiết kế riêng" },
-        { en: "attention", vi: "dành sự chú ý" },
-        { en: "measurement", vi: "số đo" },
-        { en: "up front / before", vi: "trước" },
-        { en: "assured", vi: "đảm bảo" },
-        { en: "former", vi: "cũ / trước đây" },
-        { en: "temporary (>< permanent)", vi: "tạm thời" },
-        { en: "superb", vi: "tuyệt vời" },
-        { en: "enclose / attached", vi: "đính kèm" },
-        { en: "in advance", vi: "trước" },
-        { en: "professional / specialists", vi: "chuyên gia" },
-        { en: "practice", vi: "cơ sở" },
-        { en: "procedures", vi: "quy trình / thủ tục" },
-        { en: "share a passion for", vi: "có chung niềm đam mê" },
-        { en: "initial / first", vi: "đầu tiên" }
-    ];
+    <script>
+        const vocabList = [
+            // Unit 27: Board Meetings and Committees
+            { word: "Adhere to", meaning: "Tuân thủ, gắn bó với" },
+            { word: "Agenda", meaning: "Chương trình nghị sự" },
+            { word: "Bring up", meaning: "Đưa ra, đề cập tới" },
+            { word: "Conclude", meaning: "Kết thúc, kết luận" },
+            { word: "Go ahead", meaning: "Tiến hành, tiếp tục" },
+            { word: "Goal", meaning: "Mục tiêu" },
+            { word: "Lengthy", meaning: "Dài dòng, lê thê" },
+            { word: "Matter", meaning: "Vấn đề, sự việc quan trọng" },
+            { word: "Periodically", meaning: "Một cách định kỳ" },
+            { word: "Priority", meaning: "Sự ưu tiên" },
+            { word: "Progress", meaning: "Tiến độ, sự tiến triển" },
+            { word: "Waste", meaning: "Sự lãng phí" },
 
-    let shuffledVocab = [];
-    let currentIndex = 0;
-    let score = 0;
-    let wrongWords = [];
+            // Unit 28: Quality Control
+            { word: "Brand", meaning: "Thương hiệu, nhãn hiệu" },
+            { word: "Conform", meaning: "Làm cho phù hợp, tuân thủ" },
+            { word: "Defect", meaning: "Khuyết điểm, hàng lỗi" },
+            { word: "Enhance", meaning: "Nâng cao, tăng cường" },
+            { word: "Garment", meaning: "Quần áo, hàng may mặc" },
+            { word: "Inspect", meaning: "Kiểm tra, thanh tra" },
+            { word: "Perceive", meaning: "Nhận thức, nhìn nhận" },
+            { word: "Repel", meaning: "Đẩy lùi, khước từ" },
+            { word: "Take back", meaning: "Nhận lại, rút lại (lời nói)" },
+            { word: "Throw out", meaning: "Vứt bỏ, loại bỏ" },
+            { word: "Uniform", meaning: "Đồng phục, đồng nhất" },
+            { word: "Wrinkle", meaning: "Nếp nhăn" }
+        ];
 
-    // Hàm xáo trộn mảng
-    function shuffleArray(array) {
-        let newArr = [...array];
-        for (let i = newArr.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [newArr[i], newArr[j]] = [newArr[j], newArr[i]];
-        }
-        return newArr;
-    }
+        let questions = [];
+        let currentIdx = 0;
+        let score = 0;
+        let hasAnswered = false;
 
-    // Hàm chuẩn hóa chuỗi
-    function normalizeString(str) {
-        if (!str) return "";
-        str = str.toLowerCase().trim();
-        str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
-        str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
-        str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
-        str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
-        str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
-        str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
-        str = str.replace(/đ/g, "d");
-        str = str.replace(/[^a-z0-9 ]/g, "");
-        str = str.replace(/\s+/g, " ");
-        return str;
-    }
-
-    // Bắt sự kiện Enter
-    document.getElementById("answer-input").addEventListener("keypress", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault();
-            if (document.getElementById("check-btn").style.display !== "none") {
-                checkAnswer();
-            } else if (document.getElementById("next-btn").style.display !== "none") {
-                loadNextQuestion();
+        // Hàm xáo trộn mảng
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
             }
-        }
-    });
-
-    // Bắt đầu game mới
-    function initQuiz() {
-        shuffledVocab = shuffleArray(vocabList);
-        currentIndex = 0;
-        score = 0;
-        wrongWords = [];
-        
-        document.getElementById("total-q-num").innerText = shuffledVocab.length;
-        document.getElementById("summary-area").style.display = "none";
-        document.getElementById("quiz-area").style.display = "block";
-        
-        loadNextQuestion();
-    }
-
-    function loadNextQuestion() {
-        // Kiểm tra xem đã hết câu hỏi chưa
-        if (currentIndex >= shuffledVocab.length) {
-            showSummary();
-            return;
+            return array;
         }
 
-        // Cài đặt lại UI cho câu mới
-        document.getElementById("check-btn").style.display = "block";
-        document.getElementById("next-btn").style.display = "none";
-        document.getElementById("feedback").innerHTML = "";
-        
-        let inputField = document.getElementById("answer-input");
-        inputField.value = "";
-        inputField.disabled = false;
-        inputField.focus(); 
-        
-        document.getElementById("current-q-num").innerText = currentIndex + 1;
-        document.getElementById("score").innerText = score;
-        
-        let currentQuestion = shuffledVocab[currentIndex];
-        document.getElementById("word-display").innerText = currentQuestion.en;
-    }
-
-    function checkAnswer() {
-        let userInput = document.getElementById("answer-input").value;
-        if (userInput.trim() === "") return;
-
-        let currentQuestion = shuffledVocab[currentIndex];
-        let normalizedInput = normalizeString(userInput);
-        let correctAnswers = currentQuestion.vi.split('/');
-        let isCorrect = false;
-
-        for (let i = 0; i < correctAnswers.length; i++) {
-            if (normalizedInput === normalizeString(correctAnswers[i])) {
-                isCorrect = true;
-                break;
-            }
-        }
-
-        let feedbackEl = document.getElementById("feedback");
-
-        if (isCorrect) {
-            score++;
-            feedbackEl.innerHTML = `<span class="correct-text">✔ Chính xác!</span>`;
-        } else {
-            wrongWords.push(currentQuestion);
-            feedbackEl.innerHTML = `<span class="wrong-text">✘ Sai rồi. Đáp án đúng là: <b>${currentQuestion.vi}</b></span>`;
-        }
-
-        document.getElementById("score").innerText = score;
-        document.getElementById("answer-input").disabled = true;
-        document.getElementById("check-btn").style.display = "none";
-        
-        // Nếu là câu cuối cùng thì đổi chữ nút bấm
-        let nextBtn = document.getElementById("next-btn");
-        nextBtn.style.display = "block";
-        if (currentIndex === shuffledVocab.length - 1) {
-            nextBtn.innerText = "Xem kết quả ➔";
-        } else {
-            nextBtn.innerText = "Câu tiếp theo ➔";
-        }
-        
-        nextBtn.focus();
-        currentIndex++;
-    }
-
-    function showSummary() {
-        document.getElementById("quiz-area").style.display = "none";
-        document.getElementById("summary-area").style.display = "block";
-        
-        document.getElementById("final-score").innerText = `${score} / ${shuffledVocab.length}`;
-        
-        let mistakesContainer = document.getElementById("mistakes-container");
-        let wrongList = document.getElementById("wrong-words-list");
-        wrongList.innerHTML = "";
-        
-        if (wrongWords.length > 0) {
-            mistakesContainer.style.display = "block";
-            wrongWords.forEach(word => {
-                let li = document.createElement("li");
-                li.innerHTML = `<b>${word.en}</b>: ${word.vi}`;
-                wrongList.appendChild(li);
+        // Tạo câu hỏi ngẫu nhiên và chọn đáp án nhiễu
+        function generateQuestions() {
+            questions = [];
+            let shuffledVocab = shuffleArray([...vocabList]);
+            
+            shuffledVocab.forEach(item => {
+                let options = [item.meaning];
+                let wrongOptions = vocabList.filter(v => v.word !== item.word);
+                wrongOptions = shuffleArray(wrongOptions);
+                
+                // Lấy 3 đáp án sai ngẫu nhiên
+                options.push(wrongOptions[0].meaning);
+                options.push(wrongOptions[1].meaning);
+                options.push(wrongOptions[2].meaning);
+                
+                questions.push({
+                    word: item.word,
+                    correct: item.meaning,
+                    options: shuffleArray(options) // Xáo trộn cả 4 đáp án để nút đúng không bị cố định
+                });
             });
-        } else {
-            mistakesContainer.style.display = "none";
         }
-    }
 
-    // Chạy khi mở trang
-    window.onload = initQuiz;
-</script>
+        function startQuiz() {
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
+            score = 0;
+            currentIdx = 0;
+            document.getElementById('score').innerText = score;
+            document.getElementById('total-q-num').innerText = vocabList.length;
+            generateQuestions();
+            loadQuestion();
+        }
 
+        function loadQuestion() {
+            hasAnswered = false;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback').classList.add('hidden');
+            
+            const q = questions[currentIdx];
+            document.getElementById('current-q-num').innerText = currentIdx + 1;
+            document.getElementById('question-word').innerText = q.word;
+            
+            const container = document.getElementById('options-container');
+            container.innerHTML = ''; // Xóa các nút cũ
+            
+            q.options.forEach((opt) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-semibold hover:border-indigo-400 hover:bg-indigo-50 transition-all active:scale-95';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, q.correct);
+                container.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(btn, selected, correct) {
+            if (hasAnswered) return; // Không cho click lại khi đã chọn
+            hasAnswered = true;
+            
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            
+            // Xử lý hiệu ứng đúng sai
+            buttons.forEach(b => {
+                b.disabled = true; // Khóa các nút khác
+                if (b.innerText === correct) {
+                    b.classList.remove('border-indigo-100', 'hover:bg-indigo-50', 'text-slate-700');
+                    b.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                }
+            });
+
+            const feedback = document.getElementById('feedback');
+            feedback.classList.remove('hidden');
+            
+            if (selected === correct) {
+                score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerText = "🎉 Chính xác!";
+                feedback.className = "text-center font-bold text-lg mb-6 rounded-lg p-3 bg-green-100 text-green-700";
+            } else {
+                btn.classList.remove('border-indigo-100', 'hover:bg-indigo-50');
+                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
+                feedback.innerText = "❌ Sai rồi!";
+                feedback.className = "text-center font-bold text-lg mb-6 rounded-lg p-3 bg-red-100 text-red-700";
+            }
+            
+            document.getElementById('next-btn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentIdx++;
+            if (currentIdx < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function showResult() {
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            const percent = Math.round((score / questions.length) * 100);
+            document.getElementById('percentage').innerText = percent + "%";
+        }
+
+        // Khởi chạy khi load trang
+        startQuiz();
+    </script>
 </body>
 </html>
