@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Học Từ Vựng TOEIC</title>
+    <title>Trắc Nghiệm Từ Vựng TOEIC</title>
     <style>
         :root {
             --primary: #4F46E5;
-            --secondary: #10B981;
-            --warning: #F59E0B;
+            --primary-hover: #4338CA;
+            --success: #10B981;
+            --danger: #EF4444;
             --bg: #F3F4F6;
             --text: #1F2937;
             --card-bg: #FFFFFF;
@@ -23,152 +24,153 @@
             margin: 0;
             padding: 20px;
         }
-        h1 {
-            color: var(--primary);
-            text-align: center;
-            margin-bottom: 5px;
-        }
-        .subtitle {
-            color: #6B7280;
-            font-size: 14px;
-            margin-bottom: 20px;
-        }
-        /* Flashcard Styles */
-        .scene {
-            width: 320px;
-            height: 200px;
-            perspective: 600px;
-            margin: 10px 0 20px 0;
-        }
-        .card {
+        .container {
             width: 100%;
-            height: 100%;
-            position: relative;
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
-            cursor: pointer;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            max-width: 500px;
+            background: var(--card-bg);
             border-radius: 12px;
-        }
-        .card.is-flipped {
-            transform: rotateX(180deg);
-        }
-        .card-face {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border-radius: 12px;
-            background-color: var(--card-bg);
-            padding: 20px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             box-sizing: border-box;
-            text-align: center;
         }
-        .card-front, .card-back {
-            font-size: 24px;
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--bg);
+        }
+        .score {
+            font-weight: bold;
+            color: var(--success);
+            font-size: 18px;
+        }
+        .toggle-btn {
+            background-color: #E5E7EB;
+            color: #374151;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: background 0.3s;
+        }
+        .toggle-btn:hover { background-color: #D1D5DB; }
+        
+        .question-box {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .question-title {
+            font-size: 16px;
+            color: #6B7280;
+            margin-bottom: 8px;
+        }
+        .question-word {
+            font-size: 28px;
             font-weight: bold;
             color: var(--primary);
-        }
-        .card-back {
-            transform: rotateX(180deg);
-            color: #1F2937;
         }
         .note {
             font-size: 14px;
-            color: #6B7280;
-            margin-top: 10px;
-            font-weight: normal;
+            color: #9CA3AF;
+            margin-top: 4px;
         }
-        /* Controls */
-        .controls-group {
+
+        .options-grid {
             display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            gap: 12px;
         }
-        button {
-            padding: 10px 15px;
-            font-size: 14px;
-            font-weight: bold;
-            border: none;
+        .option-btn {
+            background-color: var(--bg);
+            border: 2px solid transparent;
+            padding: 16px;
             border-radius: 8px;
+            font-size: 16px;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #E0E7FF;
+            border-color: #C7D2FE;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+        }
+        /* States */
+        .option-btn.correct {
+            background-color: #D1FAE5;
+            border-color: var(--success);
+            color: #065F46;
+        }
+        .option-btn.wrong {
+            background-color: #FEE2E2;
+            border-color: var(--danger);
+            color: #991B1B;
+        }
+
+        .action-area {
+            margin-top: 24px;
+            text-align: center;
+            min-height: 50px;
+        }
+        .next-btn {
             background-color: var(--primary);
             color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
             cursor: pointer;
-            transition: opacity 0.3s;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        button:hover {
-            opacity: 0.8;
-        }
-        .btn-nav { background-color: var(--primary); }
-        .btn-swap { background-color: var(--secondary); }
-        .btn-shuffle { background-color: var(--warning); }
-        
-        /* List Styles */
-        .vocab-list {
+            display: none; /* Ẩn đi cho đến khi chọn đáp án */
             width: 100%;
-            max-width: 600px;
-            background: white;
-            border-radius: 12px;
-            padding: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            margin-top: 20px;
-            box-sizing: border-box;
         }
-        .vocab-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid #E5E7EB;
+        .next-btn:hover { background-color: var(--primary-hover); }
+
+        .result-screen {
+            display: none;
+            text-align: center;
         }
-        .vocab-item:last-child {
-            border-bottom: none;
-        }
-        .en-word { font-weight: bold; color: var(--primary); }
+        .result-screen h2 { margin-top: 0; color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <h1>Từ vựng TOEIC</h1>
-    <div class="subtitle">Chạm vào thẻ để lật</div>
+    <div class="container" id="quiz-container">
+        <div class="header">
+            <span class="score">Điểm: <span id="score-text">0/0</span></span>
+            <button class="toggle-btn" onclick="toggleMode()" id="mode-btn">Chế độ: Anh ➔ Việt</button>
+        </div>
 
-    <div class="controls-group">
-        <button class="btn-swap" onclick="toggleDirection()">🔄 Đảo chiều (A-V / V-A)</button>
-        <button class="btn-shuffle" onclick="shuffleCards()">🔀 Trộn từ</button>
-    </div>
+        <div class="question-box">
+            <div class="question-title" id="q-title">Nghĩa của từ này là gì?</div>
+            <div class="question-word" id="q-word">Word</div>
+            <div class="note" id="q-note"></div>
+        </div>
 
-    <div class="scene">
-        <div class="card" id="flashcard" onclick="flipCard()">
-            <div class="card-face card-front">
-                <div id="word-front">Word</div>
-                <div id="note-front" class="note"></div>
+        <div class="options-grid" id="options-area">
             </div>
-            <div class="card-face card-back">
-                <div id="word-back">Nghĩa</div>
-                <div id="note-back" class="note"></div>
-            </div>
+
+        <div class="action-area">
+            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
         </div>
     </div>
 
-    <div class="controls-group">
-        <button class="btn-nav" onclick="prevCard()">&#8592; Trước</button>
-        <button class="btn-nav" onclick="nextCard()">Tiếp &#8594;</button>
-    </div>
-
-    <div class="vocab-list">
-        <h3 style="margin-top: 0;">Danh sách tổng hợp (<span id="count">0</span> từ)</h3>
-        <div id="list-container"></div>
+    <div class="container result-screen" id="result-container">
+        <h2>🎉 Hoàn thành!</h2>
+        <p style="font-size: 18px;">Bạn đã trả lời đúng:</p>
+        <p style="font-size: 36px; font-weight: bold; color: var(--success); margin: 10px 0;" id="final-score">0/0</p>
+        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="startQuiz()">Làm lại từ đầu 🔄</button>
     </div>
 
     <script>
-        // Dữ liệu từ vựng
-        let vocabData = [
+        const vocabData = [
             { en: "tenants", vi: "người thuê" },
             { en: "out of order", vi: "ngừng hoạt động" },
             { en: "apologize", vi: "xin lỗi", note: "(v) xin lỗi => apology (n)" },
@@ -186,7 +188,7 @@
             { en: "enclosed", vi: "đính kèm", note: "= attached" },
             { en: "in advance", vi: "trước" },
             { en: "professionals", vi: "chuyên gia" },
-            { en: "practice", vi: "cơ sở" },
+            { en: "practice", vi: "cơ sở (phòng khám/luật)" },
             { en: "specialists", vi: "chuyên gia", note: "= professionals" },
             { en: "comprehensive", vi: "đầy đủ, toàn diện", note: "= full" },
             { en: "procedures", vi: "quy trình, thủ tục" },
@@ -194,82 +196,141 @@
             { en: "initial", vi: "ban đầu", note: "= first" }
         ];
 
-        let currentIndex = 0;
-        let isSwapped = false; // Trạng thái: false = Anh-Việt, true = Việt-Anh
+        let currentQuestions = [];
+        let currentQuestionIndex = 0;
+        let score = 0;
+        let isEnToVi = true; // true: Anh->Việt, false: Việt->Anh
 
-        const card = document.getElementById('flashcard');
-        const frontWord = document.getElementById('word-front');
-        const frontNote = document.getElementById('note-front');
-        const backWord = document.getElementById('word-back');
-        const backNote = document.getElementById('note-back');
-        const listContainer = document.getElementById('list-container');
-        document.getElementById('count').textContent = vocabData.length;
+        const qWord = document.getElementById('q-word');
+        const qTitle = document.getElementById('q-title');
+        const qNote = document.getElementById('q-note');
+        const optionsArea = document.getElementById('options-area');
+        const nextBtn = document.getElementById('next-btn');
+        const scoreText = document.getElementById('score-text');
+        const modeBtn = document.getElementById('mode-btn');
+        const quizContainer = document.getElementById('quiz-container');
+        const resultContainer = document.getElementById('result-container');
 
-        function updateCard() {
-            card.classList.remove('is-flipped');
-            setTimeout(() => {
-                const currentVocab = vocabData[currentIndex];
-                
-                if (!isSwapped) {
-                    // Chế độ Anh - Việt
-                    frontWord.textContent = currentVocab.en;
-                    frontNote.textContent = ""; 
-                    backWord.textContent = currentVocab.vi;
-                    backNote.textContent = currentVocab.note ? currentVocab.note : "";
-                } else {
-                    // Chế độ Việt - Anh (Luyện mặt chữ)
-                    frontWord.textContent = currentVocab.vi;
-                    frontNote.textContent = currentVocab.note ? currentVocab.note : ""; 
-                    backWord.textContent = currentVocab.en;
-                    backNote.textContent = "";
-                }
-            }, 150);
-        }
-
-        function flipCard() {
-            card.classList.toggle('is-flipped');
-        }
-
-        function nextCard() {
-            currentIndex = (currentIndex + 1) % vocabData.length;
-            updateCard();
-        }
-
-        function prevCard() {
-            currentIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
-            updateCard();
-        }
-
-        function toggleDirection() {
-            isSwapped = !isSwapped;
-            updateCard();
-        }
-
-        function shuffleCards() {
-            // Thuật toán Fisher-Yates để trộn mảng
-            for (let i = vocabData.length - 1; i > 0; i--) {
+        // Hàm trộn mảng ngẫu nhiên (Fisher-Yates)
+        function shuffleArray(array) {
+            let arr = [...array];
+            for (let i = arr.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [vocabData[i], vocabData[j]] = [vocabData[j], vocabData[i]];
+                [arr[i], arr[j]] = [arr[j], arr[i]];
             }
-            currentIndex = 0;
-            updateCard();
-            renderList(); // Cập nhật lại danh sách bên dưới cho khớp
+            return arr;
         }
 
-        function renderList() {
-            listContainer.innerHTML = '';
-            vocabData.forEach(item => {
-                const div = document.createElement('div');
-                div.className = 'vocab-item';
-                let noteHtml = item.note ? `<span style="font-size: 0.8em; color: gray;"> (${item.note})</span>` : '';
-                div.innerHTML = `<span class="en-word">${item.en}</span> <span style="text-align: right;">${item.vi}${noteHtml}</span>`;
-                listContainer.appendChild(div);
+        function toggleMode() {
+            isEnToVi = !isEnToVi;
+            modeBtn.textContent = isEnToVi ? "Chế độ: Anh ➔ Việt" : "Chế độ: Việt ➔ Anh";
+            startQuiz(); // Bắt đầu lại khi đổi chế độ
+        }
+
+        function startQuiz() {
+            currentQuestions = shuffleArray(vocabData);
+            currentQuestionIndex = 0;
+            score = 0;
+            quizContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            updateScore();
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            nextBtn.style.display = 'none';
+            optionsArea.innerHTML = '';
+            
+            const currentItem = currentQuestions[currentQuestionIndex];
+            
+            // Set câu hỏi
+            if (isEnToVi) {
+                qTitle.textContent = "Chọn nghĩa tiếng Việt của:";
+                qWord.textContent = currentItem.en;
+            } else {
+                qTitle.textContent = "Chọn từ tiếng Anh có nghĩa là:";
+                qWord.textContent = currentItem.vi;
+            }
+            
+            // Hiện note nếu có (chỉ hiện sau khi trả lời, hoặc hiện luôn tuỳ bạn. Ở đây cho ẩn tạm, sau khi click mới hiện note)
+            qNote.textContent = ""; 
+
+            // Tạo danh sách đáp án
+            let correctAnswer = isEnToVi ? currentItem.vi : currentItem.en;
+            let options = [correctAnswer];
+
+            // Lấy 3 đáp án sai ngẫu nhiên
+            let distractors = vocabData.filter(item => item.en !== currentItem.en);
+            distractors = shuffleArray(distractors);
+            
+            for(let i = 0; i < 3; i++) {
+                if (distractors[i]) {
+                    options.push(isEnToVi ? distractors[i].vi : distractors[i].en);
+                }
+            }
+
+            // Trộn 4 đáp án
+            options = shuffleArray(options);
+
+            // Render nút đáp án
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(btn, opt, correctAnswer, currentItem.note);
+                optionsArea.appendChild(btn);
             });
         }
 
-        // Khởi tạo lần đầu
-        updateCard();
-        renderList();
+        function checkAnswer(selectedBtn, selectedText, correctText, note) {
+            // Vô hiệu hóa tất cả các nút
+            const allBtns = optionsArea.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.disabled = true);
+
+            // Kiểm tra đúng sai
+            if (selectedText === correctText) {
+                selectedBtn.classList.add('correct');
+                score++;
+            } else {
+                selectedBtn.classList.add('wrong');
+                // Tìm nút có đáp án đúng và bôi xanh
+                allBtns.forEach(btn => {
+                    if (btn.textContent === correctText) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+
+            // Hiện chú thích (note) nếu từ đó có
+            if (note) {
+                qNote.textContent = note;
+            }
+
+            updateScore();
+            nextBtn.style.display = 'block';
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < currentQuestions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+
+        function updateScore() {
+            scoreText.textContent = `${score}/${currentQuestions.length}`;
+        }
+
+        function showResult() {
+            quizContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            document.getElementById('final-score').textContent = `${score} / ${currentQuestions.length}`;
+        }
+
+        // Bắt đầu ngay khi tải trang
+        startQuiz();
     </script>
 </body>
 </html>
