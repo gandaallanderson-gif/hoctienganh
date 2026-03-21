@@ -3,197 +3,273 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trắc Nghiệm TOEIC - Unit 27 & 28</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Học Từ Vựng TOEIC</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --secondary: #10B981;
+            --warning: #F59E0B;
+            --bg: #F3F4F6;
+            --text: #1F2937;
+            --card-bg: #FFFFFF;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin: 0;
+            padding: 20px;
+        }
+        h1 {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 5px;
+        }
+        .subtitle {
+            color: #6B7280;
+            font-size: 14px;
+            margin-bottom: 20px;
+        }
+        /* Flashcard Styles */
+        .scene {
+            width: 320px;
+            height: 200px;
+            perspective: 600px;
+            margin: 10px 0 20px 0;
+        }
+        .card {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            cursor: pointer;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            border-radius: 12px;
+        }
+        .card.is-flipped {
+            transform: rotateX(180deg);
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border-radius: 12px;
+            background-color: var(--card-bg);
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        .card-front, .card-back {
+            font-size: 24px;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        .card-back {
+            transform: rotateX(180deg);
+            color: #1F2937;
+        }
+        .note {
+            font-size: 14px;
+            color: #6B7280;
+            margin-top: 10px;
+            font-weight: normal;
+        }
+        /* Controls */
+        .controls-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 14px;
+            font-weight: bold;
+            border: none;
+            border-radius: 8px;
+            background-color: var(--primary);
+            color: white;
+            cursor: pointer;
+            transition: opacity 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .btn-nav { background-color: var(--primary); }
+        .btn-swap { background-color: var(--secondary); }
+        .btn-shuffle { background-color: var(--warning); }
+        
+        /* List Styles */
+        .vocab-list {
+            width: 100%;
+            max-width: 600px;
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-top: 20px;
+            box-sizing: border-box;
+        }
+        .vocab-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #E5E7EB;
+        }
+        .vocab-item:last-child {
+            border-bottom: none;
+        }
+        .en-word { font-weight: bold; color: var(--primary); }
+    </style>
 </head>
-<body class="bg-indigo-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+<body>
 
-    <div class="max-w-xl w-full bg-white rounded-3xl shadow-xl overflow-hidden p-8 transition-all">
-        <h1 class="text-2xl font-extrabold text-indigo-700 mb-2 text-center">Ôn Tập Trắc Nghiệm</h1>
-        <p class="text-center text-slate-500 mb-8 font-medium">Unit 27 (Board Meetings) & Unit 28 (Quality Control)</p>
+    <h1>Từ vựng TOEIC</h1>
+    <div class="subtitle">Chạm vào thẻ để lật</div>
 
-        <div id="quiz-screen">
-            <div class="flex justify-between items-center mb-6 text-sm font-bold text-indigo-400">
-                <span>Câu <span id="current-q-num">1</span> / <span id="total-q-num">24</span></span>
-                <span>Điểm: <span id="score" class="text-green-500">0</span></span>
+    <div class="controls-group">
+        <button class="btn-swap" onclick="toggleDirection()">🔄 Đảo chiều (A-V / V-A)</button>
+        <button class="btn-shuffle" onclick="shuffleCards()">🔀 Trộn từ</button>
+    </div>
+
+    <div class="scene">
+        <div class="card" id="flashcard" onclick="flipCard()">
+            <div class="card-face card-front">
+                <div id="word-front">Word</div>
+                <div id="note-front" class="note"></div>
             </div>
-
-            <div class="bg-indigo-600 text-white rounded-2xl p-8 mb-8 text-center shadow-inner">
-                <span class="text-sm font-semibold text-indigo-200 uppercase tracking-wider mb-2 block">Chọn nghĩa đúng của từ</span>
-                <h2 id="question-word" class="text-4xl font-black drop-shadow-md tracking-wide">Word</h2>
+            <div class="card-face card-back">
+                <div id="word-back">Nghĩa</div>
+                <div id="note-back" class="note"></div>
             </div>
-
-            <div id="options-container" class="grid grid-cols-1 gap-4 mb-6">
-                </div>
-
-            <div id="feedback" class="text-center font-bold text-lg mb-6 hidden rounded-lg p-3 transition-all">
-                </div>
-
-            <button id="next-btn" onclick="nextQuestion()" class="w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-700 hidden transition-all shadow-md active:scale-95">Câu tiếp theo</button>
-        </div>
-
-        <div id="result-screen" class="hidden text-center py-8">
-            <h2 class="text-3xl font-black text-indigo-700 mb-4">Hoàn thành bài test!</h2>
-            <p class="text-lg text-slate-600 mb-6">Bạn đã làm đúng <span id="final-score" class="font-bold text-green-600 text-2xl">0</span> trên tổng số 24 câu.</p>
-            <div class="w-24 h-24 mx-auto rounded-full bg-indigo-100 flex items-center justify-center mb-8 shadow-inner border-4 border-indigo-200">
-                <span id="percentage" class="text-2xl font-black text-indigo-600">100%</span>
-            </div>
-            <button onclick="startQuiz()" class="bg-indigo-600 text-white font-bold py-4 px-8 rounded-xl hover:bg-indigo-500 transition-all shadow-md w-full active:scale-95">Làm lại từ đầu</button>
         </div>
     </div>
 
-    <script>
-        const vocabList = [
-            // Unit 27: Board Meetings and Committees
-            { word: "Adhere to", meaning: "Tuân thủ, gắn bó với" },
-            { word: "Agenda", meaning: "Chương trình nghị sự" },
-            { word: "Bring up", meaning: "Đưa ra, đề cập tới" },
-            { word: "Conclude", meaning: "Kết thúc, kết luận" },
-            { word: "Go ahead", meaning: "Tiến hành, tiếp tục" },
-            { word: "Goal", meaning: "Mục tiêu" },
-            { word: "Lengthy", meaning: "Dài dòng, lê thê" },
-            { word: "Matter", meaning: "Vấn đề, sự việc quan trọng" },
-            { word: "Periodically", meaning: "Một cách định kỳ" },
-            { word: "Priority", meaning: "Sự ưu tiên" },
-            { word: "Progress", meaning: "Tiến độ, sự tiến triển" },
-            { word: "Waste", meaning: "Sự lãng phí" },
+    <div class="controls-group">
+        <button class="btn-nav" onclick="prevCard()">&#8592; Trước</button>
+        <button class="btn-nav" onclick="nextCard()">Tiếp &#8594;</button>
+    </div>
 
-            // Unit 28: Quality Control
-            { word: "Brand", meaning: "Thương hiệu, nhãn hiệu" },
-            { word: "Conform", meaning: "Làm cho phù hợp, tuân thủ" },
-            { word: "Defect", meaning: "Khuyết điểm, hàng lỗi" },
-            { word: "Enhance", meaning: "Nâng cao, tăng cường" },
-            { word: "Garment", meaning: "Quần áo, hàng may mặc" },
-            { word: "Inspect", meaning: "Kiểm tra, thanh tra" },
-            { word: "Perceive", meaning: "Nhận thức, nhìn nhận" },
-            { word: "Repel", meaning: "Đẩy lùi, khước từ" },
-            { word: "Take back", meaning: "Nhận lại, rút lại (lời nói)" },
-            { word: "Throw out", meaning: "Vứt bỏ, loại bỏ" },
-            { word: "Uniform", meaning: "Đồng phục, đồng nhất" },
-            { word: "Wrinkle", meaning: "Nếp nhăn" }
+    <div class="vocab-list">
+        <h3 style="margin-top: 0;">Danh sách tổng hợp (<span id="count">0</span> từ)</h3>
+        <div id="list-container"></div>
+    </div>
+
+    <script>
+        // Dữ liệu từ vựng
+        let vocabData = [
+            { en: "tenants", vi: "người thuê" },
+            { en: "out of order", vi: "ngừng hoạt động" },
+            { en: "apologize", vi: "xin lỗi", note: "(v) xin lỗi => apology (n)" },
+            { en: "property management team", vi: "đội quản lý tài sản" },
+            { en: "attempt to", vi: "cố gắng" },
+            { en: "be directed to", vi: "được chuyển đến" },
+            { en: "tailored", vi: "thiết kế riêng, tinh chỉnh", note: "(v) = be customized to" },
+            { en: "gave me his full attention", vi: "dành toàn bộ sự chú ý" },
+            { en: "measurements", vi: "số đo" },
+            { en: "up front", vi: "trước", note: "= before" },
+            { en: "assured", vi: "đảm bảo" },
+            { en: "former", vi: "trước đó, cựu" },
+            { en: "temporary", vi: "tạm thời", note: ">< permanent" },
+            { en: "superb", vi: "tuyệt vời" },
+            { en: "enclosed", vi: "đính kèm", note: "= attached" },
+            { en: "in advance", vi: "trước" },
+            { en: "professionals", vi: "chuyên gia" },
+            { en: "practice", vi: "cơ sở" },
+            { en: "specialists", vi: "chuyên gia", note: "= professionals" },
+            { en: "comprehensive", vi: "đầy đủ, toàn diện", note: "= full" },
+            { en: "procedures", vi: "quy trình, thủ tục" },
+            { en: "share a passion for", vi: "có chung niềm đam mê" },
+            { en: "initial", vi: "ban đầu", note: "= first" }
         ];
 
-        let questions = [];
-        let currentIdx = 0;
-        let score = 0;
-        let hasAnswered = false;
+        let currentIndex = 0;
+        let isSwapped = false; // Trạng thái: false = Anh-Việt, true = Việt-Anh
 
-        // Hàm xáo trộn mảng
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
+        const card = document.getElementById('flashcard');
+        const frontWord = document.getElementById('word-front');
+        const frontNote = document.getElementById('note-front');
+        const backWord = document.getElementById('word-back');
+        const backNote = document.getElementById('note-back');
+        const listContainer = document.getElementById('list-container');
+        document.getElementById('count').textContent = vocabData.length;
 
-        // Tạo câu hỏi ngẫu nhiên và chọn đáp án nhiễu
-        function generateQuestions() {
-            questions = [];
-            let shuffledVocab = shuffleArray([...vocabList]);
-            
-            shuffledVocab.forEach(item => {
-                let options = [item.meaning];
-                let wrongOptions = vocabList.filter(v => v.word !== item.word);
-                wrongOptions = shuffleArray(wrongOptions);
+        function updateCard() {
+            card.classList.remove('is-flipped');
+            setTimeout(() => {
+                const currentVocab = vocabData[currentIndex];
                 
-                // Lấy 3 đáp án sai ngẫu nhiên
-                options.push(wrongOptions[0].meaning);
-                options.push(wrongOptions[1].meaning);
-                options.push(wrongOptions[2].meaning);
-                
-                questions.push({
-                    word: item.word,
-                    correct: item.meaning,
-                    options: shuffleArray(options) // Xáo trộn cả 4 đáp án để nút đúng không bị cố định
-                });
-            });
-        }
-
-        function startQuiz() {
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            document.getElementById('result-screen').classList.add('hidden');
-            score = 0;
-            currentIdx = 0;
-            document.getElementById('score').innerText = score;
-            document.getElementById('total-q-num').innerText = vocabList.length;
-            generateQuestions();
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            hasAnswered = false;
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('feedback').classList.add('hidden');
-            
-            const q = questions[currentIdx];
-            document.getElementById('current-q-num').innerText = currentIdx + 1;
-            document.getElementById('question-word').innerText = q.word;
-            
-            const container = document.getElementById('options-container');
-            container.innerHTML = ''; // Xóa các nút cũ
-            
-            q.options.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.className = 'w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-semibold hover:border-indigo-400 hover:bg-indigo-50 transition-all active:scale-95';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(btn, opt, q.correct);
-                container.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(btn, selected, correct) {
-            if (hasAnswered) return; // Không cho click lại khi đã chọn
-            hasAnswered = true;
-            
-            const buttons = document.getElementById('options-container').querySelectorAll('button');
-            
-            // Xử lý hiệu ứng đúng sai
-            buttons.forEach(b => {
-                b.disabled = true; // Khóa các nút khác
-                if (b.innerText === correct) {
-                    b.classList.remove('border-indigo-100', 'hover:bg-indigo-50', 'text-slate-700');
-                    b.classList.add('bg-green-100', 'border-green-500', 'text-green-800');
+                if (!isSwapped) {
+                    // Chế độ Anh - Việt
+                    frontWord.textContent = currentVocab.en;
+                    frontNote.textContent = ""; 
+                    backWord.textContent = currentVocab.vi;
+                    backNote.textContent = currentVocab.note ? currentVocab.note : "";
+                } else {
+                    // Chế độ Việt - Anh (Luyện mặt chữ)
+                    frontWord.textContent = currentVocab.vi;
+                    frontNote.textContent = currentVocab.note ? currentVocab.note : ""; 
+                    backWord.textContent = currentVocab.en;
+                    backNote.textContent = "";
                 }
+            }, 150);
+        }
+
+        function flipCard() {
+            card.classList.toggle('is-flipped');
+        }
+
+        function nextCard() {
+            currentIndex = (currentIndex + 1) % vocabData.length;
+            updateCard();
+        }
+
+        function prevCard() {
+            currentIndex = (currentIndex - 1 + vocabData.length) % vocabData.length;
+            updateCard();
+        }
+
+        function toggleDirection() {
+            isSwapped = !isSwapped;
+            updateCard();
+        }
+
+        function shuffleCards() {
+            // Thuật toán Fisher-Yates để trộn mảng
+            for (let i = vocabData.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [vocabData[i], vocabData[j]] = [vocabData[j], vocabData[i]];
+            }
+            currentIndex = 0;
+            updateCard();
+            renderList(); // Cập nhật lại danh sách bên dưới cho khớp
+        }
+
+        function renderList() {
+            listContainer.innerHTML = '';
+            vocabData.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'vocab-item';
+                let noteHtml = item.note ? `<span style="font-size: 0.8em; color: gray;"> (${item.note})</span>` : '';
+                div.innerHTML = `<span class="en-word">${item.en}</span> <span style="text-align: right;">${item.vi}${noteHtml}</span>`;
+                listContainer.appendChild(div);
             });
-
-            const feedback = document.getElementById('feedback');
-            feedback.classList.remove('hidden');
-            
-            if (selected === correct) {
-                score++;
-                document.getElementById('score').innerText = score;
-                feedback.innerText = "🎉 Chính xác!";
-                feedback.className = "text-center font-bold text-lg mb-6 rounded-lg p-3 bg-green-100 text-green-700";
-            } else {
-                btn.classList.remove('border-indigo-100', 'hover:bg-indigo-50');
-                btn.classList.add('bg-red-100', 'border-red-500', 'text-red-800');
-                feedback.innerText = "❌ Sai rồi!";
-                feedback.className = "text-center font-bold text-lg mb-6 rounded-lg p-3 bg-red-100 text-red-700";
-            }
-            
-            document.getElementById('next-btn').classList.remove('hidden');
         }
 
-        function nextQuestion() {
-            currentIdx++;
-            if (currentIdx < questions.length) {
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
-
-        function showResult() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score;
-            const percent = Math.round((score / questions.length) * 100);
-            document.getElementById('percentage').innerText = percent + "%";
-        }
-
-        // Khởi chạy khi load trang
-        startQuiz();
+        // Khởi tạo lần đầu
+        updateCard();
+        renderList();
     </script>
 </body>
 </html>
