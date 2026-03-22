@@ -3,333 +3,260 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trắc Nghiệm Từ Vựng TOEIC</title>
+    <title>Trắc Nghiệm TOEIC Thông Minh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --success: #10B981;
-            --danger: #EF4444;
-            --bg: #F3F4F6;
-            --text: #1F2937;
-            --card-bg: #FFFFFF;
-        }
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 500px;
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 24px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid var(--bg);
-        }
-        .score {
-            font-weight: bold;
-            color: var(--success);
-            font-size: 18px;
-        }
-        .toggle-btn {
-            background-color: #E5E7EB;
-            color: #374151;
-            border: none;
-            padding: 8px 12px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 14px;
-            font-weight: bold;
-            transition: background 0.3s;
-        }
-        .toggle-btn:hover { background-color: #D1D5DB; }
-        
-        .question-box {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-        .question-title {
-            font-size: 16px;
-            color: #6B7280;
-            margin-bottom: 8px;
-        }
-        .question-word {
-            font-size: 28px;
-            font-weight: bold;
-            color: var(--primary);
-        }
-        .note {
-            font-size: 14px;
-            color: #9CA3AF;
-            margin-top: 4px;
-        }
-
-        .options-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .option-btn {
-            background-color: var(--bg);
-            border: 2px solid transparent;
-            padding: 16px;
-            border-radius: 8px;
-            font-size: 16px;
-            color: var(--text);
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: left;
-        }
-        .option-btn:hover:not(:disabled) {
-            background-color: #E0E7FF;
-            border-color: #C7D2FE;
-        }
-        .option-btn:disabled {
-            cursor: not-allowed;
-        }
-        /* States */
-        .option-btn.correct {
-            background-color: #D1FAE5;
-            border-color: var(--success);
-            color: #065F46;
-        }
-        .option-btn.wrong {
-            background-color: #FEE2E2;
-            border-color: var(--danger);
-            color: #991B1B;
-        }
-
-        .action-area {
-            margin-top: 24px;
-            text-align: center;
-            min-height: 50px;
-        }
-        .next-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            display: none; /* Ẩn đi cho đến khi chọn đáp án */
-            width: 100%;
-        }
-        .next-btn:hover { background-color: var(--primary-hover); }
-
-        .result-screen {
-            display: none;
-            text-align: center;
-        }
-        .result-screen h2 { margin-top: 0; color: var(--primary); }
+        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
+        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
+        .btn-bounce { transition: transform 0.1s; }
+        .btn-bounce:active { transform: scale(0.97); }
     </style>
 </head>
-<body>
+<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
 
-    <div class="container" id="quiz-container">
-        <div class="header">
-            <span class="score">Điểm: <span id="score-text">0/0</span></span>
-            <button class="toggle-btn" onclick="toggleMode()" id="mode-btn">Chế độ: Anh ➔ Việt</button>
+    <div class="max-w-xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 transition-all relative">
+        
+        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
+            <div>
+                <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">TOEIC Master</h1>
+                <p class="text-sm text-slate-500 font-medium">Unit 28 & 29</p>
+            </div>
+            <div class="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-full">
+                <span class="text-xs font-bold text-slate-600">Anh ➔ Việt</span>
+                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
+                    <input type="checkbox" name="toggle" id="mode-toggle" onchange="toggleMode()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 top-0 bottom-0 m-auto right-5 transition-all duration-300"/>
+                    <label for="mode-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
+                </div>
+                <span class="text-xs font-bold text-slate-600">Việt ➔ Anh</span>
+            </div>
         </div>
 
-        <div class="question-box">
-            <div class="question-title" id="q-title">Nghĩa của từ này là gì?</div>
-            <div class="question-word" id="q-word">Word</div>
-            <div class="note" id="q-note"></div>
+        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
+            <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
         </div>
 
-        <div class="options-grid" id="options-area">
+        <div id="quiz-screen">
+            <div class="flex justify-between items-center mb-4 text-sm font-bold text-indigo-500">
+                <span>Câu <span id="current-q-num">1</span> / <span id="total-q-num">24</span></span>
+                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">Điểm: <span id="score">0</span></span>
             </div>
 
-        <div class="action-area">
-            <button class="next-btn" id="next-btn" onclick="nextQuestion()">Câu tiếp theo ➔</button>
-        </div>
-    </div>
+            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-8 mb-6 text-center shadow-lg">
+                <span id="question-label" class="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-3 block">Chọn nghĩa đúng của từ</span>
+                <h2 id="question-word" class="text-3xl sm:text-4xl font-black drop-shadow-md tracking-wide">Word</h2>
+            </div>
 
-    <div class="container result-screen" id="result-container">
-        <h2>🎉 Hoàn thành!</h2>
-        <p style="font-size: 18px;">Bạn đã trả lời đúng:</p>
-        <p style="font-size: 36px; font-weight: bold; color: var(--success); margin: 10px 0;" id="final-score">0/0</p>
-        <button class="next-btn" style="display: inline-block; margin-top: 20px;" onclick="startQuiz()">Làm lại từ đầu 🔄</button>
+            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
+                </div>
+
+            <div id="feedback-container" class="hidden flex-col gap-3 mb-6">
+                <div id="feedback" class="text-center font-bold text-lg rounded-xl p-3 shadow-sm"></div>
+                <div id="family-info" class="bg-slate-100 text-slate-700 text-sm p-4 rounded-xl border border-slate-200">
+                    <span class="font-bold text-indigo-600">💡 Biến thể (Word Family):</span> 
+                    <span id="family-text"></span>
+                </div>
+            </div>
+
+            <button id="next-btn" onclick="nextQuestion()" class="btn-bounce w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-700 hidden shadow-md text-lg">Tiếp tục ➔</button>
+        </div>
+
+        <div id="result-screen" class="hidden text-center py-10">
+            <div class="text-6xl mb-4">🏆</div>
+            <h2 class="text-3xl font-black text-indigo-700 mb-2">Hoàn thành xuất sắc!</h2>
+            <p class="text-slate-600 mb-8 font-medium">Bạn đã trả lời đúng <span id="final-score" class="font-bold text-green-600 text-2xl">0</span> / <span id="final-total">24</span> câu.</p>
+            
+            <div class="flex justify-center mb-8">
+                <div class="relative w-32 h-32 rounded-full bg-indigo-50 flex items-center justify-center shadow-inner border-8 border-indigo-100">
+                    <span id="percentage" class="text-3xl font-black text-indigo-600">100%</span>
+                </div>
+            </div>
+            
+            <button onclick="startQuiz()" class="btn-bounce bg-indigo-600 text-white font-bold py-4 px-8 rounded-xl hover:bg-indigo-500 shadow-lg w-full text-lg">Làm lại bài test ↻</button>
+        </div>
     </div>
 
     <script>
-        const vocabData = [
-            { en: "tenants", vi: "người thuê" },
-            { en: "out of order", vi: "ngừng hoạt động" },
-            { en: "apologize", vi: "xin lỗi", note: "(v) xin lỗi => apology (n)" },
-            { en: "property management team", vi: "đội quản lý tài sản" },
-            { en: "attempt to", vi: "cố gắng" },
-            { en: "be directed to", vi: "được chuyển đến" },
-            { en: "tailored", vi: "thiết kế riêng, tinh chỉnh", note: "(v) = be customized to" },
-            { en: "gave me his full attention", vi: "dành toàn bộ sự chú ý" },
-            { en: "measurements", vi: "số đo" },
-            { en: "up front", vi: "trước", note: "= before" },
-            { en: "assured", vi: "đảm bảo" },
-            { en: "former", vi: "trước đó, cựu" },
-            { en: "temporary", vi: "tạm thời", note: ">< permanent" },
-            { en: "superb", vi: "tuyệt vời" },
-            { en: "enclosed", vi: "đính kèm", note: "= attached" },
-            { en: "in advance", vi: "trước" },
-            { en: "professionals", vi: "chuyên gia" },
-            { en: "practice", vi: "cơ sở (phòng khám/luật)" },
-            { en: "specialists", vi: "chuyên gia", note: "= professionals" },
-            { en: "comprehensive", vi: "đầy đủ, toàn diện", note: "= full" },
-            { en: "procedures", vi: "quy trình, thủ tục" },
-            { en: "share a passion for", vi: "có chung niềm đam mê" },
-            { en: "initial", vi: "ban đầu", note: "= first" }
+        const vocabList = [
+            // Unit 28
+            { word: "Brand", meaning: "Thương hiệu, nhãn hiệu", family: "Branded (adj)" },
+            { word: "Conform", meaning: "Làm cho phù hợp, tuân thủ", family: "Conformity (n)" },
+            { word: "Defect", meaning: "Khuyết điểm, hàng lỗi", family: "Defective (adj)" },
+            { word: "Enhance", meaning: "Nâng cao, tăng cường", family: "Enhancement (n)" },
+            { word: "Garment", meaning: "Quần áo, hàng may mặc", family: "Không có biến thể phổ biến" },
+            { word: "Inspect", meaning: "Kiểm tra, thanh tra", family: "Inspection (n), Inspector (n)" },
+            { word: "Perceive", meaning: "Nhận thức, nhìn nhận", family: "Perception (n), Perceptive (adj)" },
+            { word: "Repel", meaning: "Đẩy lùi, chống thấm", family: "Repellent (n/adj)" },
+            { word: "Take back", meaning: "Nhận lại, nhận trả lại hàng", family: "Không có biến thể phổ biến" },
+            { word: "Throw out", meaning: "Vứt bỏ, loại bỏ", family: "Không có biến thể phổ biến" },
+            { word: "Uniform", meaning: "Đồng phục, đồng nhất", family: "Uniformity (n)" },
+            { word: "Wrinkle", meaning: "Nếp nhăn (trên vải, da)", family: "Wrinkled (adj)" },
+            // Unit 29
+            { word: "Anxious", meaning: "Lo âu, băn khoăn, nóng lòng", family: "Anxiety (n), Anxiously (adv)" },
+            { word: "Ascertain", meaning: "Xác minh, tìm hiểu chắc chắn", family: "Ascertainable (adj)" },
+            { word: "Assume", meaning: "Giả định, cho rằng", family: "Assumption (n)" },
+            { word: "Decade", meaning: "Thập kỷ (10 năm)", family: "Không có biến thể phổ biến" },
+            { word: "Examine", meaning: "Kiểm tra, xem xét chi tiết", family: "Examination (n), Examiner (n)" },
+            { word: "Experiment", meaning: "Cuộc thí nghiệm, thử nghiệm", family: "Experimental (adj)" },
+            { word: "Logical", meaning: "Hợp lý, theo logic", family: "Logic (n), Logically (adv)" },
+            { word: "Research", meaning: "Nghiên cứu", family: "Researcher (n)" },
+            { word: "Responsibility", meaning: "Trách nhiệm", family: "Responsible (adj)" },
+            { word: "Solve", meaning: "Giải quyết (vấn đề)", family: "Solution (n), Solvable (adj)" },
+            { word: "Supervisor", meaning: "Người giám sát, quản lý", family: "Supervise (v), Supervision (n)" },
+            { word: "Systematically", meaning: "Một cách có hệ thống", family: "System (n), Systematic (adj)" }
         ];
 
-        let currentQuestions = [];
-        let currentQuestionIndex = 0;
+        let questions = [];
+        let currentIdx = 0;
         let score = 0;
-        let isEnToVi = true; // true: Anh->Việt, false: Việt->Anh
-
-        const qWord = document.getElementById('q-word');
-        const qTitle = document.getElementById('q-title');
-        const qNote = document.getElementById('q-note');
-        const optionsArea = document.getElementById('options-area');
-        const nextBtn = document.getElementById('next-btn');
-        const scoreText = document.getElementById('score-text');
-        const modeBtn = document.getElementById('mode-btn');
-        const quizContainer = document.getElementById('quiz-container');
-        const resultContainer = document.getElementById('result-container');
-
-        // Hàm trộn mảng ngẫu nhiên (Fisher-Yates)
-        function shuffleArray(array) {
-            let arr = [...array];
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
+        let hasAnswered = false;
+        let isReverse = false;
 
         function toggleMode() {
-            isEnToVi = !isEnToVi;
-            modeBtn.textContent = isEnToVi ? "Chế độ: Anh ➔ Việt" : "Chế độ: Việt ➔ Anh";
-            startQuiz(); // Bắt đầu lại khi đổi chế độ
+            isReverse = document.getElementById('mode-toggle').checked;
+            document.getElementById('question-label').innerText = isReverse ? "Chọn từ Tiếng Anh tương ứng" : "Chọn nghĩa đúng của từ";
+            startQuiz(); // Khởi động lại bài test khi đổi chế độ
+        }
+
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function generateQuestions() {
+            questions = [];
+            let shuffledVocab = shuffleArray([...vocabList]);
+            
+            shuffledVocab.forEach(item => {
+                // Xác định câu hỏi và đáp án dựa trên chế độ
+                let qText = isReverse ? item.meaning : item.word;
+                let correctAns = isReverse ? item.word : item.meaning;
+                
+                let options = [correctAns];
+                let wrongOptions = vocabList.filter(v => v.word !== item.word);
+                wrongOptions = shuffleArray(wrongOptions);
+                
+                options.push(isReverse ? wrongOptions[0].word : wrongOptions[0].meaning);
+                options.push(isReverse ? wrongOptions[1].word : wrongOptions[1].meaning);
+                options.push(isReverse ? wrongOptions[2].word : wrongOptions[2].meaning);
+                
+                questions.push({
+                    question: qText,
+                    correct: correctAns,
+                    options: shuffleArray(options),
+                    family: item.family
+                });
+            });
         }
 
         function startQuiz() {
-            currentQuestions = shuffleArray(vocabData);
-            currentQuestionIndex = 0;
+            document.getElementById('quiz-screen').classList.remove('hidden');
+            document.getElementById('result-screen').classList.add('hidden');
             score = 0;
-            quizContainer.style.display = 'block';
-            resultContainer.style.display = 'none';
-            updateScore();
+            currentIdx = 0;
+            document.getElementById('score').innerText = score;
+            document.getElementById('total-q-num').innerText = vocabList.length;
+            document.getElementById('final-total').innerText = vocabList.length;
+            generateQuestions();
             loadQuestion();
         }
 
         function loadQuestion() {
-            nextBtn.style.display = 'none';
-            optionsArea.innerHTML = '';
+            hasAnswered = false;
+            document.getElementById('next-btn').classList.add('hidden');
+            document.getElementById('feedback-container').classList.remove('flex');
+            document.getElementById('feedback-container').classList.add('hidden');
             
-            const currentItem = currentQuestions[currentQuestionIndex];
+            // Cập nhật thanh tiến độ
+            const progress = (currentIdx / questions.length) * 100;
+            document.getElementById('progress-bar').style.width = `${progress}%`;
             
-            // Set câu hỏi
-            if (isEnToVi) {
-                qTitle.textContent = "Chọn nghĩa tiếng Việt của:";
-                qWord.textContent = currentItem.en;
-            } else {
-                qTitle.textContent = "Chọn từ tiếng Anh có nghĩa là:";
-                qWord.textContent = currentItem.vi;
-            }
+            const q = questions[currentIdx];
+            document.getElementById('current-q-num').innerText = currentIdx + 1;
+            document.getElementById('question-word').innerText = q.question;
             
-            // Hiện note nếu có (chỉ hiện sau khi trả lời, hoặc hiện luôn tuỳ bạn. Ở đây cho ẩn tạm, sau khi click mới hiện note)
-            qNote.textContent = ""; 
-
-            // Tạo danh sách đáp án
-            let correctAnswer = isEnToVi ? currentItem.vi : currentItem.en;
-            let options = [correctAnswer];
-
-            // Lấy 3 đáp án sai ngẫu nhiên
-            let distractors = vocabData.filter(item => item.en !== currentItem.en);
-            distractors = shuffleArray(distractors);
+            const container = document.getElementById('options-container');
+            container.innerHTML = ''; 
             
-            for(let i = 0; i < 3; i++) {
-                if (distractors[i]) {
-                    options.push(isEnToVi ? distractors[i].vi : distractors[i].en);
-                }
-            }
-
-            // Trộn 4 đáp án
-            options = shuffleArray(options);
-
-            // Render nút đáp án
-            options.forEach(opt => {
+            q.options.forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.textContent = opt;
-                btn.onclick = () => checkAnswer(btn, opt, correctAnswer, currentItem.note);
-                optionsArea.appendChild(btn);
+                btn.className = 'btn-bounce w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-bold hover:border-indigo-500 hover:bg-indigo-50 transition-all text-base sm:text-lg';
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(btn, opt, q.correct, q.family);
+                container.appendChild(btn);
             });
         }
 
-        function checkAnswer(selectedBtn, selectedText, correctText, note) {
-            // Vô hiệu hóa tất cả các nút
-            const allBtns = optionsArea.querySelectorAll('.option-btn');
-            allBtns.forEach(btn => btn.disabled = true);
+        function checkAnswer(btn, selected, correct, familyInfo) {
+            if (hasAnswered) return; 
+            hasAnswered = true;
+            
+            const buttons = document.getElementById('options-container').querySelectorAll('button');
+            
+            buttons.forEach(b => {
+                b.disabled = true;
+                if (b.innerText === correct) {
+                    b.classList.replace('border-indigo-100', 'border-green-500');
+                    b.classList.replace('text-slate-700', 'text-green-700');
+                    b.classList.add('bg-green-50');
+                }
+            });
 
-            // Kiểm tra đúng sai
-            if (selectedText === correctText) {
-                selectedBtn.classList.add('correct');
+            const feedbackContainer = document.getElementById('feedback-container');
+            const feedback = document.getElementById('feedback');
+            const familyText = document.getElementById('family-text');
+            
+            feedbackContainer.classList.remove('hidden');
+            feedbackContainer.classList.add('flex');
+            
+            familyText.innerText = familyInfo;
+
+            if (selected === correct) {
                 score++;
+                document.getElementById('score').innerText = score;
+                feedback.innerText = "🎉 Tuyệt vời! Chính xác.";
+                feedback.className = "text-center font-bold text-lg rounded-xl p-3 bg-green-100 text-green-700 border border-green-200";
             } else {
-                selectedBtn.classList.add('wrong');
-                // Tìm nút có đáp án đúng và bôi xanh
-                allBtns.forEach(btn => {
-                    if (btn.textContent === correctText) {
-                        btn.classList.add('correct');
-                    }
-                });
+                btn.classList.replace('border-indigo-100', 'border-red-500');
+                btn.classList.replace('text-slate-700', 'text-red-700');
+                btn.classList.add('bg-red-50');
+                feedback.innerText = "❌ Sai rồi! Cố gắng câu sau nhé.";
+                feedback.className = "text-center font-bold text-lg rounded-xl p-3 bg-red-100 text-red-700 border border-red-200";
             }
-
-            // Hiện chú thích (note) nếu từ đó có
-            if (note) {
-                qNote.textContent = note;
+            
+            document.getElementById('next-btn').classList.remove('hidden');
+            
+            // Cập nhật thanh tiến độ full nếu là câu cuối
+            if (currentIdx === questions.length - 1) {
+                document.getElementById('progress-bar').style.width = `100%`;
             }
-
-            updateScore();
-            nextBtn.style.display = 'block';
         }
 
         function nextQuestion() {
-            currentQuestionIndex++;
-            if (currentQuestionIndex < currentQuestions.length) {
+            currentIdx++;
+            if (currentIdx < questions.length) {
                 loadQuestion();
             } else {
                 showResult();
             }
         }
 
-        function updateScore() {
-            scoreText.textContent = `${score}/${currentQuestions.length}`;
-        }
-
         function showResult() {
-            quizContainer.style.display = 'none';
-            resultContainer.style.display = 'block';
-            document.getElementById('final-score').textContent = `${score} / ${currentQuestions.length}`;
+            document.getElementById('quiz-screen').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('final-score').innerText = score;
+            const percent = Math.round((score / questions.length) * 100);
+            document.getElementById('percentage').innerText = percent + "%";
+            
+            // Đổi màu phần trăm tùy theo điểm
+            const pctEl = document.getElementById('percentage');
+            if(percent >= 80) pctEl.className = "text-3xl font-black text-green-500";
+            else if(percent >= 50) pctEl.className = "text-3xl font-black text-yellow-500";
+            else pctEl.className = "text-3xl font-black text-red-500";
         }
 
-        // Bắt đầu ngay khi tải trang
         startQuiz();
     </script>
 </body>
