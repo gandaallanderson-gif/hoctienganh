@@ -19,7 +19,7 @@
         <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
             <div>
                 <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">TOEIC Master</h1>
-                <p class="text-sm text-slate-500 font-medium">Unit 28 & 29</p>
+                <p class="text-sm text-slate-500 font-medium">Unit 29 & 30</p>
             </div>
             <div class="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-full">
                 <span class="text-xs font-bold text-slate-600">Anh ➔ Việt</span>
@@ -77,20 +77,7 @@
 
     <script>
         const vocabList = [
-            // Unit 28
-            { word: "Brand", meaning: "Thương hiệu, nhãn hiệu", family: "Branded (adj)" },
-            { word: "Conform", meaning: "Làm cho phù hợp, tuân thủ", family: "Conformity (n)" },
-            { word: "Defect", meaning: "Khuyết điểm, hàng lỗi", family: "Defective (adj)" },
-            { word: "Enhance", meaning: "Nâng cao, tăng cường", family: "Enhancement (n)" },
-            { word: "Garment", meaning: "Quần áo, hàng may mặc", family: "Không có biến thể phổ biến" },
-            { word: "Inspect", meaning: "Kiểm tra, thanh tra", family: "Inspection (n), Inspector (n)" },
-            { word: "Perceive", meaning: "Nhận thức, nhìn nhận", family: "Perception (n), Perceptive (adj)" },
-            { word: "Repel", meaning: "Đẩy lùi, chống thấm", family: "Repellent (n/adj)" },
-            { word: "Take back", meaning: "Nhận lại, nhận trả lại hàng", family: "Không có biến thể phổ biến" },
-            { word: "Throw out", meaning: "Vứt bỏ, loại bỏ", family: "Không có biến thể phổ biến" },
-            { word: "Uniform", meaning: "Đồng phục, đồng nhất", family: "Uniformity (n)" },
-            { word: "Wrinkle", meaning: "Nếp nhăn (trên vải, da)", family: "Wrinkled (adj)" },
-            // Unit 29
+            // Unit 29: Product Development (Phát triển sản phẩm)
             { word: "Anxious", meaning: "Lo âu, băn khoăn, nóng lòng", family: "Anxiety (n), Anxiously (adv)" },
             { word: "Ascertain", meaning: "Xác minh, tìm hiểu chắc chắn", family: "Ascertainable (adj)" },
             { word: "Assume", meaning: "Giả định, cho rằng", family: "Assumption (n)" },
@@ -102,7 +89,21 @@
             { word: "Responsibility", meaning: "Trách nhiệm", family: "Responsible (adj)" },
             { word: "Solve", meaning: "Giải quyết (vấn đề)", family: "Solution (n), Solvable (adj)" },
             { word: "Supervisor", meaning: "Người giám sát, quản lý", family: "Supervise (v), Supervision (n)" },
-            { word: "Systematically", meaning: "Một cách có hệ thống", family: "System (n), Systematic (adj)" }
+            { word: "Systematically", meaning: "Một cách có hệ thống", family: "System (n), Systematic (adj)" },
+            
+            // Unit 30: Renting and Leasing (Thuê và cho thuê)
+            { word: "Apprehensive", meaning: "E sợ, lo âu", family: "Apprehension (n), Apprehensively (adv)" },
+            { word: "Circumstance", meaning: "Hoàn cảnh, tình huống", family: "Circumstantial (adj)" },
+            { word: "Condition", meaning: "Điều kiện, tình trạng", family: "Conditional (adj)" },
+            { word: "Due to", meaning: "Do, bởi vì", family: "Không có biến thể phổ biến" },
+            { word: "Fluctuate", meaning: "Dao động, thay đổi lên xuống", family: "Fluctuation (n)" },
+            { word: "Get out of", meaning: "Thoát khỏi, tránh né", family: "Không có biến thể phổ biến" },
+            { word: "Indicator", meaning: "Dấu hiệu, vật chỉ thị", family: "Indicate (v), Indication (n)" },
+            { word: "Lease", meaning: "Hợp đồng thuê, cho thuê", family: "Lessor (n), Lessee (n)" },
+            { word: "Lock into", meaning: "Ràng buộc, cam kết chặt chẽ", family: "Không có biến thể phổ biến" },
+            { word: "Occupancy", meaning: "Sự cư ngụ, sự sở hữu", family: "Occupant (n), Occupy (v)" },
+            { word: "Option", meaning: "Sự lựa chọn", family: "Optional (adj)" },
+            { word: "Subject to", meaning: "Tùy thuộc vào, phải chịu", family: "Subject (n/v)" }
         ];
 
         let questions = [];
@@ -114,7 +115,7 @@
         function toggleMode() {
             isReverse = document.getElementById('mode-toggle').checked;
             document.getElementById('question-label').innerText = isReverse ? "Chọn từ Tiếng Anh tương ứng" : "Chọn nghĩa đúng của từ";
-            startQuiz(); // Khởi động lại bài test khi đổi chế độ
+            startQuiz(); 
         }
 
         function shuffleArray(array) {
@@ -130,7 +131,6 @@
             let shuffledVocab = shuffleArray([...vocabList]);
             
             shuffledVocab.forEach(item => {
-                // Xác định câu hỏi và đáp án dựa trên chế độ
                 let qText = isReverse ? item.meaning : item.word;
                 let correctAns = isReverse ? item.word : item.meaning;
                 
@@ -169,7 +169,6 @@
             document.getElementById('feedback-container').classList.remove('flex');
             document.getElementById('feedback-container').classList.add('hidden');
             
-            // Cập nhật thanh tiến độ
             const progress = (currentIdx / questions.length) * 100;
             document.getElementById('progress-bar').style.width = `${progress}%`;
             
@@ -182,7 +181,7 @@
             
             q.options.forEach((opt) => {
                 const btn = document.createElement('button');
-                btn.className = 'btn-bounce w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-bold hover:border-indigo-500 hover:bg-indigo-50 transition-all text-base sm:text-lg';
+                btn.className = 'btn-bounce w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-bold hover:border-indigo-500 hover:bg-indigo-50 transition-all text-base sm:text-lg shadow-sm';
                 btn.innerText = opt;
                 btn.onclick = () => checkAnswer(btn, opt, q.correct, q.family);
                 container.appendChild(btn);
@@ -228,7 +227,6 @@
             
             document.getElementById('next-btn').classList.remove('hidden');
             
-            // Cập nhật thanh tiến độ full nếu là câu cuối
             if (currentIdx === questions.length - 1) {
                 document.getElementById('progress-bar').style.width = `100%`;
             }
@@ -250,7 +248,6 @@
             const percent = Math.round((score / questions.length) * 100);
             document.getElementById('percentage').innerText = percent + "%";
             
-            // Đổi màu phần trăm tùy theo điểm
             const pctEl = document.getElementById('percentage');
             if(percent >= 80) pctEl.className = "text-3xl font-black text-green-500";
             else if(percent >= 50) pctEl.className = "text-3xl font-black text-yellow-500";
