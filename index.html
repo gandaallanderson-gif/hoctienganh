@@ -21,7 +21,7 @@
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
             text-align: center;
             width: 100%;
-            max-width: 450px;
+            max-width: 500px;
         }
         h2 {
             color: #1f2937;
@@ -55,6 +55,7 @@
             border-radius: 8px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin: 5px;
         }
         button:hover {
             background-color: #1d4ed8;
@@ -89,32 +90,56 @@
 </div>
 
 <script>
+    // --- TỔNG HỢP TOÀN BỘ TỪ VỰNG PART 6 ---
     const vocabList = [
-        { vi: "nâng một số đồ nội thất", en: ["lifting some furniture"] },
-        { vi: "khởi động động cơ", en: ["starting an engine"] },
-        { vi: "rèm cửa", en: ["curtains", "blinds"] },
-        { vi: "đặt nằm lên", en: ["laid"] },
-        { vi: "tụ tập", en: ["gathered"] },
-        { vi: "với tay vào", en: ["reaching into"] }, // Đã xóa khoảng trắng thừa
-        { vi: "xếp hàng", en: ["waiting in a line", "standing in a line"] },
-        { vi: "dẫn đoàn du lịch", en: ["leading a tour group"] },
-        { vi: "mở máy tính tiền", en: ["opening a cash register"] },
-        { vi: "cúi xuống", en: ["bending over"] }, // Đã xóa khoảng trắng thừa
-        { vi: "một chồng gạch", en: ["a stack of bricks"] },
-        { vi: "tay vịn, lan can", en: ["handrail"] },
-        { vi: "ghế bành", en: ["armchair"] },
-        { vi: "tài liệu đọc", en: ["reading materials"] },
-        { vi: "được tưới nước", en: ["being watered"] },
-        { vi: "được treo", en: ["hanging on"] },
-        { vi: "điều chỉnh", en: ["adjusting"] },
-        { vi: "kiểm tra", en: ["inspecting", "examine"] },
-        { vi: "xe đẩy hàng", en: ["vending cart"] },
-        { vi: "xe đồ ăn di động", en: ["mobile food stand"] },
-        { vi: "vỉa hè", en: ["walkway", "sidewalk", "pavement"] },
-        { vi: "dụng cụ nấu ăn", en: ["cooking utensils"] }
+        // Part 6 - Text List
+        { vi: "đảm bảo", en: ["assure"] },
+        { vi: "thông báo", en: ["notify", "announce"] },
+        { vi: "tuân thủ", en: ["comply with", "follow", "abide by"] },
+        { vi: "ưu tiên", en: ["prioritise", "prioritize"] },
+        { vi: "làm hài lòng, thoả mãn", en: ["satisfy", "fulfill"] },
+        { vi: "quy trình, thủ tục", en: ["procedure"] },
+        { vi: "chuyên môn", en: ["expertise"] },
+        { vi: "quan chức", en: ["officials"] },
+        { vi: "sự đặt trước", en: ["reservation"] },
+        { vi: "sự cải tạo", en: ["renovation"] },
+        { vi: "miễn phí", en: ["complimentary", "free"] },
+        { vi: "đầy đủ, tổng quát", en: ["comprehensive"] },
+        { vi: "sở hữu", en: ["possess", "have"] },
+        { vi: "xin tư vấn", en: ["consult"] },
+        { vi: "linh hoạt", en: ["flexible"] },
+        { vi: "được tham gia đông đủ", en: ["well-attended"] },
+        { vi: "ngưng hoạt động", en: ["out of order"] },
+        { vi: "tới hạn", en: ["to be due"] },
+        { vi: "công việc, sự phân công, nhiệm vụ", en: ["assignment"] },
+        { vi: "có tiềm năng", en: ["potential"] },
+        { vi: "số dư tài khoản, số tiền còn lại", en: ["balance"] },
+        { vi: "hào hứng, phấn khích", en: ["thrilled", "excited"] },
+
+        // Part 6 - Hình ảnh
+        { vi: "trì hoãn", en: ["postpone", "delay"] },
+        { vi: "chỉ ra, thể hiện", en: ["indicated", "show"] },
+        { vi: "mong đợi", en: ["anticipated", "expected"] },
+        { vi: "đắt", en: ["expensive"] },
+        { vi: "lặp lại", en: ["repetitive"] },
+        { vi: "thú vị", en: ["appealing"] },
+        { vi: "bất ngờ", en: ["surprising"] },
+        { vi: "truy vấn kĩ thuật", en: ["technical query"] },
+        { vi: "khởi động lại", en: ["reboot", "restart"] },
+        { vi: "vị trí từ xa", en: ["remote location"] },
+        { vi: "sớm nhất có thể", en: ["at your earliest convenience", "asap"] },
+        { vi: "công năng", en: ["capabilities"] },
+        { vi: "đơn mua sỉ", en: ["wholesale orders"] },
+        { vi: "ưu đãi, giảm giá", en: ["offer", "deal", "discount"] },
+        { vi: "gỗ óc chó", en: ["walnut wood"] },
+        { vi: "tiền cọc, tiền gửi ngân hàng", en: ["deposit"] },
+        { vi: "sơ yếu lý lịch", en: ["résumé", "cv", "resume"] },
+        { vi: "đáp lại, phản hồi", en: ["in response to"] },
+        { vi: "phù hợp", en: ["well suited"] },
+        { vi: "nhiệt huyết", en: ["enthusiastic"] }
     ];
 
-    // --- TÍNH NĂNG MỚI: Hàm xáo trộn mảng ngẫu nhiên (Fisher-Yates Shuffle) ---
+    // Hàm xáo trộn mảng ngẫu nhiên
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -137,7 +162,7 @@
             enInputElement.focus();
             updateStats();
         } else {
-            viWordElement.textContent = "🎉 Chúc mừng bạn đã hoàn thành!";
+            viWordElement.textContent = "🎉 Chúc mừng bạn đã hoàn thành bộ từ vựng!";
             enInputElement.style.display = 'none';
             document.querySelector('button').style.display = 'none';
             messageElement.textContent = '';
@@ -146,8 +171,6 @@
 
     function checkAnswer() {
         const userAnswer = enInputElement.value.trim().toLowerCase();
-        
-        // --- FIX BUG: Thêm trim() vào dữ liệu mẫu để chắc chắn không bao giờ bị dính khoảng trắng ---
         const correctAnswers = vocabList[currentIndex].en.map(ans => ans.trim().toLowerCase());
 
         if (correctAnswers.includes(userAnswer)) {
