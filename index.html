@@ -89,18 +89,17 @@
 </div>
 
 <script>
-    // Danh sách từ vựng đã được nâng cấp để hỗ trợ nhiều đáp án (từ đồng nghĩa)
     const vocabList = [
         { vi: "nâng một số đồ nội thất", en: ["lifting some furniture"] },
         { vi: "khởi động động cơ", en: ["starting an engine"] },
         { vi: "rèm cửa", en: ["curtains", "blinds"] },
         { vi: "đặt nằm lên", en: ["laid"] },
         { vi: "tụ tập", en: ["gathered"] },
-        { vi: "với tay vào", en: ["reaching into "] },
+        { vi: "với tay vào", en: ["reaching into"] }, // Đã xóa khoảng trắng thừa
         { vi: "xếp hàng", en: ["waiting in a line", "standing in a line"] },
         { vi: "dẫn đoàn du lịch", en: ["leading a tour group"] },
         { vi: "mở máy tính tiền", en: ["opening a cash register"] },
-        { vi: "cúi xuống", en: ["bending over "] },
+        { vi: "cúi xuống", en: ["bending over"] }, // Đã xóa khoảng trắng thừa
         { vi: "một chồng gạch", en: ["a stack of bricks"] },
         { vi: "tay vịn, lan can", en: ["handrail"] },
         { vi: "ghế bành", en: ["armchair"] },
@@ -114,6 +113,14 @@
         { vi: "vỉa hè", en: ["walkway", "sidewalk", "pavement"] },
         { vi: "dụng cụ nấu ăn", en: ["cooking utensils"] }
     ];
+
+    // --- TÍNH NĂNG MỚI: Hàm xáo trộn mảng ngẫu nhiên (Fisher-Yates Shuffle) ---
+    function shuffleArray(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+    }
 
     let currentIndex = 0;
 
@@ -138,20 +145,17 @@
     }
 
     function checkAnswer() {
-        // Lấy câu trả lời của người dùng, loại bỏ khoảng trắng thừa và chuyển thành chữ thường
         const userAnswer = enInputElement.value.trim().toLowerCase();
         
-        // Lấy mảng các đáp án đúng và chuyển tất cả thành chữ thường
-        const correctAnswers = vocabList[currentIndex].en.map(ans => ans.toLowerCase());
+        // --- FIX BUG: Thêm trim() vào dữ liệu mẫu để chắc chắn không bao giờ bị dính khoảng trắng ---
+        const correctAnswers = vocabList[currentIndex].en.map(ans => ans.trim().toLowerCase());
 
-        // Kiểm tra xem câu trả lời của người dùng có nằm trong mảng đáp án đúng không
         if (correctAnswers.includes(userAnswer)) {
             messageElement.textContent = "✅ Chính xác!";
             messageElement.className = "message correct";
             currentIndex++;
-            setTimeout(loadWord, 1000); // Tự động chuyển từ sau 1 giây
+            setTimeout(loadWord, 1000); 
         } else {
-            // Nối các đáp án đúng lại với nhau bằng chữ "hoặc" để hiển thị cho người dùng
             messageElement.textContent = `❌ Sai rồi. Đáp án đúng: "${correctAnswers.join('" hoặc "')}"`;
             messageElement.className = "message incorrect";
         }
@@ -161,7 +165,6 @@
         statsElement.textContent = `Từ ${currentIndex + 1} / ${vocabList.length}`;
     }
 
-    // Bắt sự kiện nhấn phím Enter để kiểm tra nhanh
     enInputElement.addEventListener("keypress", function(event) {
         if (event.key === "Enter") {
             event.preventDefault();
@@ -169,6 +172,9 @@
         }
     });
 
+    // Xáo trộn danh sách trước khi bắt đầu
+    shuffleArray(vocabList);
+    
     // Khởi tạo app
     loadWord();
 </script>
