@@ -3,258 +3,175 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trắc Nghiệm TOEIC Thông Minh</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>ChipVocab - Luyện Thi TOEIC</title>
     <style>
-        .toggle-checkbox:checked { right: 0; border-color: #4f46e5; }
-        .toggle-checkbox:checked + .toggle-label { background-color: #4f46e5; }
-        .btn-bounce { transition: transform 0.1s; }
-        .btn-bounce:active { transform: scale(0.97); }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f3f4f6;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: center;
+            width: 100%;
+            max-width: 450px;
+        }
+        h2 {
+            color: #1f2937;
+            margin-bottom: 20px;
+        }
+        .vietnamese-word {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2563eb;
+            margin-bottom: 20px;
+        }
+        input[type="text"] {
+            width: 80%;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+        input[type="text"]:focus {
+            border-color: #2563eb;
+        }
+        button {
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #1d4ed8;
+        }
+        .message {
+            margin-top: 15px;
+            font-weight: bold;
+            min-height: 24px;
+            font-size: 15px;
+        }
+        .correct { color: #16a34a; }
+        .incorrect { color: #dc2626; }
+        .stats {
+            margin-top: 20px;
+            font-size: 14px;
+            color: #6b7280;
+        }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen flex flex-col items-center justify-center p-4 font-sans text-slate-800">
+<body>
 
-    <div class="max-w-xl w-full bg-white rounded-3xl shadow-2xl overflow-hidden p-6 sm:p-8 transition-all relative">
+<div class="container">
+    <h2>Luyện Gõ Từ Vựng TOEIC</h2>
+    <div class="vietnamese-word" id="vi-word">Đang tải...</div>
+    
+    <input type="text" id="en-input" placeholder="Nhập tiếng Anh vào đây..." autocomplete="off">
+    <br>
+    <button onclick="checkAnswer()">Kiểm tra</button>
+    
+    <div class="message" id="message"></div>
+    <div class="stats" id="stats"></div>
+</div>
+
+<script>
+    // Danh sách từ vựng đã được nâng cấp để hỗ trợ nhiều đáp án (từ đồng nghĩa)
+    const vocabList = [
+        { vi: "nâng một số đồ nội thất", en: ["lifting some furniture"] },
+        { vi: "khởi động động cơ", en: ["starting an engine"] },
+        { vi: "rèm cửa", en: ["curtains", "blinds"] },
+        { vi: "đặt nằm lên", en: ["laid"] },
+        { vi: "tụ tập", en: ["gathered"] },
+        { vi: "với tay vào túi xách", en: ["reaching into her bag"] },
+        { vi: "xếp hàng", en: ["waiting in a line", "standing in a line"] },
+        { vi: "dẫn đoàn du lịch", en: ["leading a tour group"] },
+        { vi: "mở máy tính tiền", en: ["opening a cash register"] },
+        { vi: "cúi xuống chiếc xe đạp", en: ["bending over a bicycle"] },
+        { vi: "một chồng gạch", en: ["a stack of bricks"] },
+        { vi: "tay vịn, lan can", en: ["handrail"] },
+        { vi: "ghế bành", en: ["armchair"] },
+        { vi: "tài liệu đọc", en: ["reading materials"] },
+        { vi: "được tưới nước", en: ["being watered"] },
+        { vi: "được treo", en: ["hanging on"] },
+        { vi: "điều chỉnh", en: ["adjusting"] },
+        { vi: "kiểm tra", en: ["inspecting", "examine"] },
+        { vi: "xe đẩy hàng", en: ["vending cart"] },
+        { vi: "xe đồ ăn di động", en: ["mobile food stand"] },
+        { vi: "vỉa hè", en: ["walkway", "sidewalk", "pavement"] },
+        { vi: "dụng cụ nấu ăn", en: ["cooking utensils"] }
+    ];
+
+    let currentIndex = 0;
+
+    const viWordElement = document.getElementById('vi-word');
+    const enInputElement = document.getElementById('en-input');
+    const messageElement = document.getElementById('message');
+    const statsElement = document.getElementById('stats');
+
+    function loadWord() {
+        if (currentIndex < vocabList.length) {
+            viWordElement.textContent = vocabList[currentIndex].vi;
+            enInputElement.value = '';
+            messageElement.textContent = '';
+            enInputElement.focus();
+            updateStats();
+        } else {
+            viWordElement.textContent = "🎉 Chúc mừng bạn đã hoàn thành!";
+            enInputElement.style.display = 'none';
+            document.querySelector('button').style.display = 'none';
+            messageElement.textContent = '';
+        }
+    }
+
+    function checkAnswer() {
+        // Lấy câu trả lời của người dùng, loại bỏ khoảng trắng thừa và chuyển thành chữ thường
+        const userAnswer = enInputElement.value.trim().toLowerCase();
         
-        <div class="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4">
-            <div>
-                <h1 class="text-2xl font-extrabold text-indigo-700 tracking-tight">TOEIC Master</h1>
-                <p class="text-sm text-slate-500 font-medium">Unit 29 & 30</p>
-            </div>
-            <div class="flex items-center gap-3 bg-slate-100 px-4 py-2 rounded-full">
-                <span class="text-xs font-bold text-slate-600">Anh ➔ Việt</span>
-                <div class="relative inline-block w-10 mr-2 align-middle select-none transition duration-200 ease-in">
-                    <input type="checkbox" name="toggle" id="mode-toggle" onchange="toggleMode()" class="toggle-checkbox absolute block w-5 h-5 rounded-full bg-white border-4 appearance-none cursor-pointer z-10 top-0 bottom-0 m-auto right-5 transition-all duration-300"/>
-                    <label for="mode-toggle" class="toggle-label block overflow-hidden h-5 rounded-full bg-gray-300 cursor-pointer transition-colors duration-300"></label>
-                </div>
-                <span class="text-xs font-bold text-slate-600">Việt ➔ Anh</span>
-            </div>
-        </div>
+        // Lấy mảng các đáp án đúng và chuyển tất cả thành chữ thường
+        const correctAnswers = vocabList[currentIndex].en.map(ans => ans.toLowerCase());
 
-        <div class="w-full bg-gray-200 rounded-full h-2 mb-6">
-            <div id="progress-bar" class="bg-indigo-600 h-2 rounded-full transition-all duration-500" style="width: 0%"></div>
-        </div>
-
-        <div id="quiz-screen">
-            <div class="flex justify-between items-center mb-4 text-sm font-bold text-indigo-500">
-                <span>Câu <span id="current-q-num">1</span> / <span id="total-q-num">24</span></span>
-                <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full">Điểm: <span id="score">0</span></span>
-            </div>
-
-            <div class="bg-gradient-to-br from-indigo-500 to-indigo-700 text-white rounded-2xl p-8 mb-6 text-center shadow-lg">
-                <span id="question-label" class="text-xs font-bold text-indigo-200 uppercase tracking-widest mb-3 block">Chọn nghĩa đúng của từ</span>
-                <h2 id="question-word" class="text-3xl sm:text-4xl font-black drop-shadow-md tracking-wide">Word</h2>
-            </div>
-
-            <div id="options-container" class="grid grid-cols-1 gap-3 mb-6">
-                </div>
-
-            <div id="feedback-container" class="hidden flex-col gap-3 mb-6">
-                <div id="feedback" class="text-center font-bold text-lg rounded-xl p-3 shadow-sm"></div>
-                <div id="family-info" class="bg-slate-100 text-slate-700 text-sm p-4 rounded-xl border border-slate-200">
-                    <span class="font-bold text-indigo-600">💡 Biến thể (Word Family):</span> 
-                    <span id="family-text"></span>
-                </div>
-            </div>
-
-            <button id="next-btn" onclick="nextQuestion()" class="btn-bounce w-full bg-slate-800 text-white font-bold py-4 rounded-xl hover:bg-slate-700 hidden shadow-md text-lg">Tiếp tục ➔</button>
-        </div>
-
-        <div id="result-screen" class="hidden text-center py-10">
-            <div class="text-6xl mb-4">🏆</div>
-            <h2 class="text-3xl font-black text-indigo-700 mb-2">Hoàn thành xuất sắc!</h2>
-            <p class="text-slate-600 mb-8 font-medium">Bạn đã trả lời đúng <span id="final-score" class="font-bold text-green-600 text-2xl">0</span> / <span id="final-total">24</span> câu.</p>
-            
-            <div class="flex justify-center mb-8">
-                <div class="relative w-32 h-32 rounded-full bg-indigo-50 flex items-center justify-center shadow-inner border-8 border-indigo-100">
-                    <span id="percentage" class="text-3xl font-black text-indigo-600">100%</span>
-                </div>
-            </div>
-            
-            <button onclick="startQuiz()" class="btn-bounce bg-indigo-600 text-white font-bold py-4 px-8 rounded-xl hover:bg-indigo-500 shadow-lg w-full text-lg">Làm lại bài test ↻</button>
-        </div>
-    </div>
-
-    <script>
-        const vocabList = [
-            // Unit 29: Product Development (Phát triển sản phẩm)
-            { word: "Anxious", meaning: "Lo âu, băn khoăn, nóng lòng", family: "Anxiety (n), Anxiously (adv)" },
-            { word: "Ascertain", meaning: "Xác minh, tìm hiểu chắc chắn", family: "Ascertainable (adj)" },
-            { word: "Assume", meaning: "Giả định, cho rằng", family: "Assumption (n)" },
-            { word: "Decade", meaning: "Thập kỷ (10 năm)", family: "Không có biến thể phổ biến" },
-            { word: "Examine", meaning: "Kiểm tra, xem xét chi tiết", family: "Examination (n), Examiner (n)" },
-            { word: "Experiment", meaning: "Cuộc thí nghiệm, thử nghiệm", family: "Experimental (adj)" },
-            { word: "Logical", meaning: "Hợp lý, theo logic", family: "Logic (n), Logically (adv)" },
-            { word: "Research", meaning: "Nghiên cứu", family: "Researcher (n)" },
-            { word: "Responsibility", meaning: "Trách nhiệm", family: "Responsible (adj)" },
-            { word: "Solve", meaning: "Giải quyết (vấn đề)", family: "Solution (n), Solvable (adj)" },
-            { word: "Supervisor", meaning: "Người giám sát, quản lý", family: "Supervise (v), Supervision (n)" },
-            { word: "Systematically", meaning: "Một cách có hệ thống", family: "System (n), Systematic (adj)" },
-            
-            // Unit 30: Renting and Leasing (Thuê và cho thuê)
-            { word: "Apprehensive", meaning: "E sợ, lo âu", family: "Apprehension (n), Apprehensively (adv)" },
-            { word: "Circumstance", meaning: "Hoàn cảnh, tình huống", family: "Circumstantial (adj)" },
-            { word: "Condition", meaning: "Điều kiện, tình trạng", family: "Conditional (adj)" },
-            { word: "Due to", meaning: "Do, bởi vì", family: "Không có biến thể phổ biến" },
-            { word: "Fluctuate", meaning: "Dao động, thay đổi lên xuống", family: "Fluctuation (n)" },
-            { word: "Get out of", meaning: "Thoát khỏi, tránh né", family: "Không có biến thể phổ biến" },
-            { word: "Indicator", meaning: "Dấu hiệu, vật chỉ thị", family: "Indicate (v), Indication (n)" },
-            { word: "Lease", meaning: "Hợp đồng thuê, cho thuê", family: "Lessor (n), Lessee (n)" },
-            { word: "Lock into", meaning: "Ràng buộc, cam kết chặt chẽ", family: "Không có biến thể phổ biến" },
-            { word: "Occupancy", meaning: "Sự cư ngụ, sự sở hữu", family: "Occupant (n), Occupy (v)" },
-            { word: "Option", meaning: "Sự lựa chọn", family: "Optional (adj)" },
-            { word: "Subject to", meaning: "Tùy thuộc vào, phải chịu", family: "Subject (n/v)" }
-        ];
-
-        let questions = [];
-        let currentIdx = 0;
-        let score = 0;
-        let hasAnswered = false;
-        let isReverse = false;
-
-        function toggleMode() {
-            isReverse = document.getElementById('mode-toggle').checked;
-            document.getElementById('question-label').innerText = isReverse ? "Chọn từ Tiếng Anh tương ứng" : "Chọn nghĩa đúng của từ";
-            startQuiz(); 
+        // Kiểm tra xem câu trả lời của người dùng có nằm trong mảng đáp án đúng không
+        if (correctAnswers.includes(userAnswer)) {
+            messageElement.textContent = "✅ Chính xác!";
+            messageElement.className = "message correct";
+            currentIndex++;
+            setTimeout(loadWord, 1000); // Tự động chuyển từ sau 1 giây
+        } else {
+            // Nối các đáp án đúng lại với nhau bằng chữ "hoặc" để hiển thị cho người dùng
+            messageElement.textContent = `❌ Sai rồi. Đáp án đúng: "${correctAnswers.join('" hoặc "')}"`;
+            messageElement.className = "message incorrect";
         }
+    }
 
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
+    function updateStats() {
+        statsElement.textContent = `Từ ${currentIndex + 1} / ${vocabList.length}`;
+    }
+
+    // Bắt sự kiện nhấn phím Enter để kiểm tra nhanh
+    enInputElement.addEventListener("keypress", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault();
+            checkAnswer();
         }
+    });
 
-        function generateQuestions() {
-            questions = [];
-            let shuffledVocab = shuffleArray([...vocabList]);
-            
-            shuffledVocab.forEach(item => {
-                let qText = isReverse ? item.meaning : item.word;
-                let correctAns = isReverse ? item.word : item.meaning;
-                
-                let options = [correctAns];
-                let wrongOptions = vocabList.filter(v => v.word !== item.word);
-                wrongOptions = shuffleArray(wrongOptions);
-                
-                options.push(isReverse ? wrongOptions[0].word : wrongOptions[0].meaning);
-                options.push(isReverse ? wrongOptions[1].word : wrongOptions[1].meaning);
-                options.push(isReverse ? wrongOptions[2].word : wrongOptions[2].meaning);
-                
-                questions.push({
-                    question: qText,
-                    correct: correctAns,
-                    options: shuffleArray(options),
-                    family: item.family
-                });
-            });
-        }
+    // Khởi tạo app
+    loadWord();
+</script>
 
-        function startQuiz() {
-            document.getElementById('quiz-screen').classList.remove('hidden');
-            document.getElementById('result-screen').classList.add('hidden');
-            score = 0;
-            currentIdx = 0;
-            document.getElementById('score').innerText = score;
-            document.getElementById('total-q-num').innerText = vocabList.length;
-            document.getElementById('final-total').innerText = vocabList.length;
-            generateQuestions();
-            loadQuestion();
-        }
-
-        function loadQuestion() {
-            hasAnswered = false;
-            document.getElementById('next-btn').classList.add('hidden');
-            document.getElementById('feedback-container').classList.remove('flex');
-            document.getElementById('feedback-container').classList.add('hidden');
-            
-            const progress = (currentIdx / questions.length) * 100;
-            document.getElementById('progress-bar').style.width = `${progress}%`;
-            
-            const q = questions[currentIdx];
-            document.getElementById('current-q-num').innerText = currentIdx + 1;
-            document.getElementById('question-word').innerText = q.question;
-            
-            const container = document.getElementById('options-container');
-            container.innerHTML = ''; 
-            
-            q.options.forEach((opt) => {
-                const btn = document.createElement('button');
-                btn.className = 'btn-bounce w-full text-left bg-white border-2 border-indigo-100 p-4 rounded-xl text-slate-700 font-bold hover:border-indigo-500 hover:bg-indigo-50 transition-all text-base sm:text-lg shadow-sm';
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(btn, opt, q.correct, q.family);
-                container.appendChild(btn);
-            });
-        }
-
-        function checkAnswer(btn, selected, correct, familyInfo) {
-            if (hasAnswered) return; 
-            hasAnswered = true;
-            
-            const buttons = document.getElementById('options-container').querySelectorAll('button');
-            
-            buttons.forEach(b => {
-                b.disabled = true;
-                if (b.innerText === correct) {
-                    b.classList.replace('border-indigo-100', 'border-green-500');
-                    b.classList.replace('text-slate-700', 'text-green-700');
-                    b.classList.add('bg-green-50');
-                }
-            });
-
-            const feedbackContainer = document.getElementById('feedback-container');
-            const feedback = document.getElementById('feedback');
-            const familyText = document.getElementById('family-text');
-            
-            feedbackContainer.classList.remove('hidden');
-            feedbackContainer.classList.add('flex');
-            
-            familyText.innerText = familyInfo;
-
-            if (selected === correct) {
-                score++;
-                document.getElementById('score').innerText = score;
-                feedback.innerText = "🎉 Tuyệt vời! Chính xác.";
-                feedback.className = "text-center font-bold text-lg rounded-xl p-3 bg-green-100 text-green-700 border border-green-200";
-            } else {
-                btn.classList.replace('border-indigo-100', 'border-red-500');
-                btn.classList.replace('text-slate-700', 'text-red-700');
-                btn.classList.add('bg-red-50');
-                feedback.innerText = "❌ Sai rồi! Cố gắng câu sau nhé.";
-                feedback.className = "text-center font-bold text-lg rounded-xl p-3 bg-red-100 text-red-700 border border-red-200";
-            }
-            
-            document.getElementById('next-btn').classList.remove('hidden');
-            
-            if (currentIdx === questions.length - 1) {
-                document.getElementById('progress-bar').style.width = `100%`;
-            }
-        }
-
-        function nextQuestion() {
-            currentIdx++;
-            if (currentIdx < questions.length) {
-                loadQuestion();
-            } else {
-                showResult();
-            }
-        }
-
-        function showResult() {
-            document.getElementById('quiz-screen').classList.add('hidden');
-            document.getElementById('result-screen').classList.remove('hidden');
-            document.getElementById('final-score').innerText = score;
-            const percent = Math.round((score / questions.length) * 100);
-            document.getElementById('percentage').innerText = percent + "%";
-            
-            const pctEl = document.getElementById('percentage');
-            if(percent >= 80) pctEl.className = "text-3xl font-black text-green-500";
-            else if(percent >= 50) pctEl.className = "text-3xl font-black text-yellow-500";
-            else pctEl.className = "text-3xl font-black text-red-500";
-        }
-
-        startQuiz();
-    </script>
 </body>
 </html>
