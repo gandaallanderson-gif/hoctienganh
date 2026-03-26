@@ -81,6 +81,8 @@
         .action-btn:hover { background-color: #1d4ed8; }
         .action-btn.back { background-color: #6b7280; }
         .action-btn.back:hover { background-color: #4b5563; }
+        .action-btn.retest { background-color: #f59e0b; display: none; }
+        .action-btn.retest:hover { background-color: #d97706; }
         
         .message {
             margin-top: 15px;
@@ -112,6 +114,7 @@
         <input type="text" id="en-input" placeholder="Nhập tiếng Anh vào đây..." autocomplete="off">
         <br>
         <button class="action-btn" id="check-btn" onclick="checkAnswer()">Kiểm tra</button>
+        <button class="action-btn retest" id="retest-btn" onclick="startRetest()">🔄 Làm lại từ sai</button>
         <button class="action-btn back" onclick="backToMenu()">🔙 Trở lại Menu</button>
         
         <div class="message" id="message"></div>
@@ -208,6 +211,10 @@
 
     let currentList = [];
     let currentIndex = 0;
+    
+    // Biến lưu trữ các từ làm sai
+    let wrongWords = [];
+    let hasMistakedCurrentWord = false;
 
     // Các phần tử UI
     const menuScreen = document.getElementById('menu-screen');
@@ -216,26 +223,38 @@
     const viWordElement = document.getElementById('vi-word');
     const enInputElement = document.getElementById('en-input');
     const checkBtn = document.getElementById('check-btn');
+    const retestBtn = document.getElementById('retest-btn');
     const messageElement = document.getElementById('message');
     const statsElement = document.getElementById('stats');
 
     // Bắt đầu học theo Menu đã chọn
     function startLearning(menuKey) {
-        // Copy dữ liệu sang mảng hiện tại để không làm hỏng dữ liệu gốc
         currentList = [...vocabData[menuKey]];
-        
-        // Đã tắt tính năng đảo lộn (random) theo yêu cầu
-        // shuffleArray(currentList); 
-        
         currentIndex = 0;
+        wrongWords = []; // Reset danh sách từ sai
         
-        // Cập nhật tiêu đề bài học dựa theo menu được bấm
         if (menuKey === 'menu1') lessonTitle.textContent = "Danh sách 22 từ Text";
         else if (menuKey === 'menu2') lessonTitle.textContent = "Từ vựng từ Ảnh (Part 7) - Phần 1";
         else if (menuKey === 'menu3') lessonTitle.textContent = "Từ vựng từ Ảnh (Part 7) - Phần 2";
         
         menuScreen.style.display = 'none';
         gameScreen.style.display = 'block';
+        retestBtn.style.display = 'none';
+        
+        enInputElement.style.display = 'inline-block';
+        checkBtn.style.display = 'inline-block';
+        
+        loadWord();
+    }
+
+    // Bắt đầu test lại các từ sai
+    function startRetest() {
+        currentList = [...wrongWords]; // Đưa các từ sai vào danh sách test hiện tại
+        wrongWords = []; // Xóa trắng rổ từ sai cũ để bắt đầu vòng lọc mới
+        currentIndex = 0;
+        
+        lessonTitle.textContent = "Ôn lại các từ đã sai";
+        retestBtn.style.display = 'none';
         
         enInputElement.style.display = 'inline-block';
         checkBtn.style.display = 'inline-block';
@@ -252,6 +271,8 @@
     }
 
     function loadWord() {
+        hasMistakedCurrentWord = false; // Đặt lại cờ cho từ mới
+        
         if (currentIndex < currentList.length) {
             viWordElement.textContent = currentList[currentIndex].vi;
             enInputElement.value = '';
@@ -259,10 +280,18 @@
             enInputElement.focus();
             updateStats();
         } else {
-            viWordElement.textContent = "🎉 Hoàn thành bài học!";
+            // Khi hết danh sách
             enInputElement.style.display = 'none';
             checkBtn.style.display = 'none';
             messageElement.textContent = '';
+            
+            // Kiểm tra xem có từ nào bị sai không
+            if (wrongWords.length > 0) {
+                viWordElement.textContent = `⚠️ Bạn đã gõ sai ${wrongWords.length} từ. Hãy làm lại để nhớ lâu hơn nhé!`;
+                retestBtn.style.display = 'inline-block'; // Hiện nút làm lại
+            } else {
+                viWordElement.textContent = "🎉 Tuyệt vời! Bạn đã gõ đúng 100% không sai từ nào!";
+            }
         }
     }
 
@@ -276,6 +305,11 @@
             currentIndex++;
             setTimeout(loadWord, 1000); 
         } else {
+            // Nếu người dùng gõ sai lần đầu tiên ở từ này, tống nó vào rổ wrongWords
+            if (!hasMistakedCurrentWord) {
+                wrongWords.push(currentList[currentIndex]);
+                hasMistakedCurrentWord = true;
+            }
             messageElement.textContent = `❌ Sai rồi. Đáp án đúng: "${correctAnswers.join('" hoặc "')}"`;
             messageElement.className = "message incorrect";
         }
