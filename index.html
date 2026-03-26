@@ -27,6 +27,30 @@
             color: #1f2937;
             margin-bottom: 20px;
         }
+        
+        /* Menu Styles */
+        .menu-btn {
+            display: block;
+            width: 100%;
+            background-color: #4f46e5;
+            color: white;
+            border: none;
+            padding: 15px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-bottom: 15px;
+        }
+        .menu-btn:hover { background-color: #4338ca; }
+        .menu-btn.alt { background-color: #059669; }
+        .menu-btn.alt:hover { background-color: #047857; }
+        .menu-btn.new { background-color: #db2777; }
+        .menu-btn.new:hover { background-color: #be185d; }
+        
+        /* Game Styles */
+        #game-screen { display: none; }
         .vietnamese-word {
             font-size: 24px;
             font-weight: bold;
@@ -43,23 +67,21 @@
             outline: none;
             transition: border-color 0.3s;
         }
-        input[type="text"]:focus {
-            border-color: #2563eb;
-        }
-        button {
+        input[type="text"]:focus { border-color: #2563eb; }
+        .action-btn {
             background-color: #2563eb;
             color: white;
             border: none;
-            padding: 12px 24px;
-            font-size: 16px;
+            padding: 10px 20px;
+            font-size: 15px;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.3s;
             margin: 5px;
         }
-        button:hover {
-            background-color: #1d4ed8;
-        }
+        .action-btn:hover { background-color: #1d4ed8; }
+        .action-btn.back { background-color: #6b7280; }
+        .action-btn.back:hover { background-color: #4b5563; }
+        
         .message {
             margin-top: 15px;
             font-weight: bold;
@@ -68,78 +90,136 @@
         }
         .correct { color: #16a34a; }
         .incorrect { color: #dc2626; }
-        .stats {
-            margin-top: 20px;
-            font-size: 14px;
-            color: #6b7280;
-        }
+        .stats { margin-top: 20px; font-size: 14px; color: #6b7280; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h2>Luyện Gõ Từ Vựng TOEIC</h2>
-    <div class="vietnamese-word" id="vi-word">Đang tải...</div>
-    
-    <input type="text" id="en-input" placeholder="Nhập tiếng Anh vào đây..." autocomplete="off">
-    <br>
-    <button onclick="checkAnswer()">Kiểm tra</button>
-    
-    <div class="message" id="message"></div>
-    <div class="stats" id="stats"></div>
+    <!-- MÀN HÌNH MENU CHÍNH -->
+    <div id="menu-screen">
+        <h2>Chọn Bài Học Hôm Nay</h2>
+        <button class="menu-btn" onclick="startLearning('menu1')">📚 Menu 1: Danh sách 22 từ Text</button>
+        <button class="menu-btn alt" onclick="startLearning('menu2')">🖼️ Menu 2: Từ vựng từ Ảnh (Part 7) - P1</button>
+        <button class="menu-btn new" onclick="startLearning('menu3')">🔥 Menu 3: Từ vựng từ Ảnh (Part 7) - P2</button>
+    </div>
+
+    <!-- MÀN HÌNH HỌC TỪ VỰNG -->
+    <div id="game-screen">
+        <h2 id="lesson-title">Luyện Gõ Từ Vựng</h2>
+        <div class="vietnamese-word" id="vi-word">Đang tải...</div>
+        
+        <input type="text" id="en-input" placeholder="Nhập tiếng Anh vào đây..." autocomplete="off">
+        <br>
+        <button class="action-btn" id="check-btn" onclick="checkAnswer()">Kiểm tra</button>
+        <button class="action-btn back" onclick="backToMenu()">🔙 Trở lại Menu</button>
+        
+        <div class="message" id="message"></div>
+        <div class="stats" id="stats"></div>
+    </div>
 </div>
 
 <script>
-    // --- TỔNG HỢP TOÀN BỘ TỪ VỰNG PART 6 ---
-    const vocabList = [
-        // Part 6 - Text List
-        { vi: "đảm bảo", en: ["assure"] },
-        { vi: "thông báo", en: ["notify", "announce"] },
-        { vi: "tuân thủ", en: ["comply with", "follow", "abide by"] },
-        { vi: "ưu tiên", en: ["prioritise", "prioritize"] },
-        { vi: "làm hài lòng, thoả mãn", en: ["satisfy", "fulfill"] },
-        { vi: "quy trình, thủ tục", en: ["procedure"] },
-        { vi: "chuyên môn", en: ["expertise"] },
-        { vi: "quan chức", en: ["officials"] },
-        { vi: "sự đặt trước", en: ["reservation"] },
-        { vi: "sự cải tạo", en: ["renovation"] },
-        { vi: "miễn phí", en: ["complimentary", "free"] },
-        { vi: "đầy đủ, tổng quát", en: ["comprehensive"] },
-        { vi: "sở hữu", en: ["possess", "have"] },
-        { vi: "xin tư vấn", en: ["consult"] },
-        { vi: "linh hoạt", en: ["flexible"] },
-        { vi: "được tham gia đông đủ", en: ["well-attended"] },
-        { vi: "ngưng hoạt động", en: ["out of order"] },
-        { vi: "tới hạn", en: ["to be due"] },
-        { vi: "công việc, sự phân công, nhiệm vụ", en: ["assignment"] },
-        { vi: "có tiềm năng", en: ["potential"] },
-        { vi: "số dư tài khoản, số tiền còn lại", en: ["balance"] },
-        { vi: "hào hứng, phấn khích", en: ["thrilled", "excited"] },
+    // --- KHO DỮ LIỆU TỪ VỰNG CHIA THEO MENU ---
+    const vocabData = {
+        menu1: [
+            { vi: "đảm bảo", en: ["assure"] },
+            { vi: "thông báo", en: ["notify", "announce"] },
+            { vi: "tuân thủ", en: ["comply with", "follow", "abide by"] },
+            { vi: "ưu tiên", en: ["prioritise", "prioritize"] },
+            { vi: "làm hài lòng, thoả mãn", en: ["satisfy", "fulfill"] },
+            { vi: "quy trình, thủ tục", en: ["procedure"] },
+            { vi: "chuyên môn", en: ["expertise"] },
+            { vi: "quan chức", en: ["officials"] },
+            { vi: "sự đặt trước", en: ["reservation"] },
+            { vi: "sự cải tạo", en: ["renovation"] },
+            { vi: "miễn phí", en: ["complimentary", "free"] },
+            { vi: "đầy đủ, tổng quát", en: ["comprehensive"] },
+            { vi: "sở hữu", en: ["possess", "have"] },
+            { vi: "xin tư vấn", en: ["consult"] },
+            { vi: "linh hoạt", en: ["flexible"] },
+            { vi: "được tham gia đông đủ", en: ["well-attended"] },
+            { vi: "ngưng hoạt động", en: ["out of order"] },
+            { vi: "tới hạn", en: ["to be due"] },
+            { vi: "công việc, sự phân công, nhiệm vụ", en: ["assignment"] },
+            { vi: "có tiềm năng", en: ["potential"] },
+            { vi: "số dư tài khoản, số tiền còn lại", en: ["balance"] },
+            { vi: "hào hứng, phấn khích", en: ["thrilled", "excited"] }
+        ],
+        menu2: [
+            { vi: "đang tiến hành", en: ["in progress"] },
+            { vi: "nhà thầu", en: ["contractor"] },
+            { vi: "sở kế hoạch", en: ["department of planning"] },
+            { vi: "nộp", en: ["file"] },
+            { vi: "dàn nhạc giao hưởng", en: ["symphony orchestra"] },
+            { vi: "tác phẩm", en: ["works"] },
+            { vi: "công bố", en: ["publicize"] },
+            { vi: "nghề nghiệp", en: ["occupation", "job"] },
+            { vi: "nhân viên ngân hàng", en: ["bank teller", "bank clerk", "banker"] },
+            { vi: "từ phía tôi", en: ["on my end"] },
+            { vi: "hai thập kỷ", en: ["two decades"] },
+            { vi: "loại", en: ["makes", "kinds", "types"] },
+            { vi: "nội địa", en: ["domestic", "locally manufactured", "locally produced"] },
+            { vi: "xé vụn", en: ["shred"] },
+            { vi: "xử lý, huỷ bỏ", en: ["dispose of"] },
+            { vi: "tài liệu mật", en: ["confidential paperwork"] },
+            { vi: "thuộc thành phố", en: ["municipal", "urban"] },
+            { vi: "bản sao kê tài khoản", en: ["bank statements"] },
+            { vi: "ngay tại chỗ", en: ["on the spot"] },
+            { vi: "có mặt", en: ["be on hand", "be present"] },
+            { vi: "hạn chót", en: ["due date", "deadline"] },
+            { vi: "xổ số", en: ["raffle"] },
+            { vi: "miễn phí", en: ["complimentary", "free"] },
+            { vi: "bất cứ lúc nào, 24/24", en: ["around the clock", "at any time"] },
+            { vi: "kiểm soát", en: ["monitor", "control"] },
+            { vi: "đi kèm", en: ["accompanied by"] },
+            { vi: "vé", en: ["pass"] },
+            { vi: "nhận diện", en: ["recognize", "recognise"] },
+            { vi: "cao cấp", en: ["premium"] },
+            { vi: "hùn vốn", en: ["joins forces"] },
+            { vi: "cổ đông", en: ["shareholder"] },
+            { vi: "cải thiện", en: ["enhance", "improve"] },
+            { vi: "khuôn viên, cơ sở", en: ["premises"] },
+            { vi: "hiện đại", en: ["state-of-the-art", "modern"] },
+            { vi: "đảm nhận, tiếp quản", en: ["took over"] },
+            { vi: "đảm nhận vai trò", en: ["assuming the role"] },
+            { vi: "sáng kiến", en: ["initiatives"] },
+            { vi: "sự hào hứng", en: ["excitement"] }
+        ],
+        menu3: [
+            { vi: "mới nhất", en: ["latest", "newest"] },
+            { vi: "công chiếu, ra mắt", en: ["premiere", "release", "premiered"] },
+            { vi: "giới chuyên môn", en: ["critics"] },
+            { vi: "được vinh danh", en: ["be honored with", "was honored with"] },
+            { vi: "kịch bản", en: ["screenplay"] },
+            { vi: "hàng không", en: ["aviation", "airline"] },
+            { vi: "xuất sắc, thông minh", en: ["brilliant", "intelligent", "outstanding"] },
+            { vi: "táo bạo, dám nghĩ dám làm", en: ["enterprising"] },
+            { vi: "công ty khởi nghiệp", en: ["enterprise", "start-up company"] },
+            { vi: "công chúng", en: ["wider audience", "the public"] },
+            { vi: "sự công nhận của giới chuyên môn", en: ["critical acclaim"] },
+            { vi: "nhóm tập trung (để nghiên cứu)", en: ["focus group"] },
+            { vi: "khách hàng tiềm năng", en: ["potential customers"] },
+            { vi: "mẫu đơn đồng ý, chấp thuận", en: ["consent form"] },
+            { vi: "còn lại", en: ["left over", "remaining"] },
+            { vi: "trước đây", en: ["previously", "before"] }
+        ]
+    };
 
-        // Part 6 - Hình ảnh
-        { vi: "trì hoãn", en: ["postpone", "delay"] },
-        { vi: "chỉ ra, thể hiện", en: ["indicated", "show"] },
-        { vi: "mong đợi", en: ["anticipated", "expected"] },
-        { vi: "đắt", en: ["expensive"] },
-        { vi: "lặp lại", en: ["repetitive"] },
-        { vi: "thú vị", en: ["appealing"] },
-        { vi: "bất ngờ", en: ["surprising"] },
-        { vi: "truy vấn kĩ thuật", en: ["technical query"] },
-        { vi: "khởi động lại", en: ["reboot", "restart"] },
-        { vi: "vị trí từ xa", en: ["remote location"] },
-        { vi: "sớm nhất có thể", en: ["at your earliest convenience", "asap"] },
-        { vi: "công năng", en: ["capabilities"] },
-        { vi: "đơn mua sỉ", en: ["wholesale orders"] },
-        { vi: "ưu đãi, giảm giá", en: ["offer", "deal", "discount"] },
-        { vi: "gỗ óc chó", en: ["walnut wood"] },
-        { vi: "tiền cọc, tiền gửi ngân hàng", en: ["deposit"] },
-        { vi: "sơ yếu lý lịch", en: ["résumé", "cv", "resume"] },
-        { vi: "đáp lại, phản hồi", en: ["in response to"] },
-        { vi: "phù hợp", en: ["well suited"] },
-        { vi: "nhiệt huyết", en: ["enthusiastic"] }
-    ];
+    let currentList = [];
+    let currentIndex = 0;
 
-    // Hàm xáo trộn mảng ngẫu nhiên
+    // Các phần tử UI
+    const menuScreen = document.getElementById('menu-screen');
+    const gameScreen = document.getElementById('game-screen');
+    const lessonTitle = document.getElementById('lesson-title');
+    const viWordElement = document.getElementById('vi-word');
+    const enInputElement = document.getElementById('en-input');
+    const checkBtn = document.getElementById('check-btn');
+    const messageElement = document.getElementById('message');
+    const statsElement = document.getElementById('stats');
+
+    // Hàm trộn mảng
     function shuffleArray(array) {
         for (let i = array.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -147,31 +227,54 @@
         }
     }
 
-    let currentIndex = 0;
+    // Bắt đầu học theo Menu đã chọn
+    function startLearning(menuKey) {
+        // Copy dữ liệu sang mảng hiện tại để không làm hỏng dữ liệu gốc
+        currentList = [...vocabData[menuKey]];
+        shuffleArray(currentList);
+        
+        currentIndex = 0;
+        
+        // Cập nhật tiêu đề bài học dựa theo menu được bấm
+        if (menuKey === 'menu1') lessonTitle.textContent = "Danh sách 22 từ Text";
+        else if (menuKey === 'menu2') lessonTitle.textContent = "Từ vựng từ Ảnh (Part 7) - Phần 1";
+        else if (menuKey === 'menu3') lessonTitle.textContent = "Từ vựng từ Ảnh (Part 7) - Phần 2";
+        
+        menuScreen.style.display = 'none';
+        gameScreen.style.display = 'block';
+        
+        enInputElement.style.display = 'inline-block';
+        checkBtn.style.display = 'inline-block';
+        
+        loadWord();
+    }
 
-    const viWordElement = document.getElementById('vi-word');
-    const enInputElement = document.getElementById('en-input');
-    const messageElement = document.getElementById('message');
-    const statsElement = document.getElementById('stats');
+    // Trở lại màn hình chọn Menu
+    function backToMenu() {
+        gameScreen.style.display = 'none';
+        menuScreen.style.display = 'block';
+        enInputElement.value = '';
+        messageElement.textContent = '';
+    }
 
     function loadWord() {
-        if (currentIndex < vocabList.length) {
-            viWordElement.textContent = vocabList[currentIndex].vi;
+        if (currentIndex < currentList.length) {
+            viWordElement.textContent = currentList[currentIndex].vi;
             enInputElement.value = '';
             messageElement.textContent = '';
             enInputElement.focus();
             updateStats();
         } else {
-            viWordElement.textContent = "🎉 Chúc mừng bạn đã hoàn thành bộ từ vựng!";
+            viWordElement.textContent = "🎉 Hoàn thành bài học!";
             enInputElement.style.display = 'none';
-            document.querySelector('button').style.display = 'none';
+            checkBtn.style.display = 'none';
             messageElement.textContent = '';
         }
     }
 
     function checkAnswer() {
         const userAnswer = enInputElement.value.trim().toLowerCase();
-        const correctAnswers = vocabList[currentIndex].en.map(ans => ans.trim().toLowerCase());
+        const correctAnswers = currentList[currentIndex].en.map(ans => ans.trim().toLowerCase());
 
         if (correctAnswers.includes(userAnswer)) {
             messageElement.textContent = "✅ Chính xác!";
@@ -185,7 +288,7 @@
     }
 
     function updateStats() {
-        statsElement.textContent = `Từ ${currentIndex + 1} / ${vocabList.length}`;
+        statsElement.textContent = `Từ ${currentIndex + 1} / ${currentList.length}`;
     }
 
     enInputElement.addEventListener("keypress", function(event) {
@@ -195,11 +298,6 @@
         }
     });
 
-    // Xáo trộn danh sách trước khi bắt đầu
-    shuffleArray(vocabList);
-    
-    // Khởi tạo app
-    loadWord();
 </script>
 
 </body>
