@@ -219,19 +219,13 @@
     const messageElement = document.getElementById('message');
     const statsElement = document.getElementById('stats');
 
-    // Hàm trộn mảng
-    function shuffleArray(array) {
-        for (let i = array.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [array[i], array[j]] = [array[j], array[i]];
-        }
-    }
-
     // Bắt đầu học theo Menu đã chọn
     function startLearning(menuKey) {
         // Copy dữ liệu sang mảng hiện tại để không làm hỏng dữ liệu gốc
         currentList = [...vocabData[menuKey]];
-        shuffleArray(currentList);
+        
+        // Đã tắt tính năng đảo lộn (random) theo yêu cầu
+        // shuffleArray(currentList); 
         
         currentIndex = 0;
         
